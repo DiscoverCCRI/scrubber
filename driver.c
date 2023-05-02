@@ -8,6 +8,12 @@
  *  - finding outliers and storing them in a data structure?
  *      - find outliers and store ID (col 0) 
  *      - delete on confirmation
+ *  - Statistical methods on data, range of data, display data
+ *    over a given range, correlation?
+ *  - Graphing, switch -> Python
+ *  
+ *
+ * - Docs, CI/CD,,
  */
 #include "scrub.h"
 #include <stdio.h>
