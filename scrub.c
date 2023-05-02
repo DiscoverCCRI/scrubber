@@ -38,12 +38,6 @@ TableInfo *get_data(MYSQL *con) {
     MYSQL_RES *result;
     // MYSQL field(column) struct
     MYSQL_FIELD *field;
-    // MYSQL row struct
-    MYSQL_ROW row;
-
-    unsigned int num_fields;
-    // result array
-    char **result_arr;
 
     // query mqtt_data table
     if (mysql_query(con, "SELECT * FROM mqtt_data")) {
