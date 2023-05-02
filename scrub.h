@@ -1,5 +1,5 @@
 /**
- * @file
+ * @file scrub.h
  * This file performs cleanup on the insertions made from the weather
  * station MQTT subscribe code. Detecting outliers/anomalies in data
  *
@@ -17,6 +17,7 @@
 typedef struct {
     char **columns;
     unsigned int num_rows;
+    unsigned int num_cols;
     // reference more?
 
 } TableInfo;
@@ -26,25 +27,29 @@ typedef struct {
  * @param addr server address
  * @param user user name
  * @param pass user password
- * @return A MYSQL pointer if the connection is successful, NULL otherwise.
+ * @return A MYSQL pointer if the connection is successful, NULL otherwise
  */
 MYSQL *db_connect(char *addr, char *user, char *pass, char *db);
 
 /**
- * @brief Returns an array of strings containing the names of the columns in
- * mqtt_data
+ * @brief Retrieve table information, column names, number of columns, number
+ * of rows
  * @param con A pointer to a MySQL connection object.
- * @return A pointer to an array of strings containing the names of the columns
- *
+ * @return A pointer to a dynamically allocated TableInfo struct that contains 
+ * the column names, number of columns and number of rows
  */
-char **col_names(MYSQL *con);
+TableInfo *get_data(MYSQL *con);
 
+/**
+ * @brief Function for detecting outliers for weather readings
+ */
 void outliers(MYSQL *con, char **columns);
 
 /**
- * @brief Frees memory allocated to col_arr and its elements
- * @param col_arr Array of strings containing table columns names
+ * @brief Function for freeing memory allocated by TableInfo struct
+ * @param info_ptr A pointer to the TableInfo struct whose memory is 
+ * to be freed
  */
-void col_free(char **col_arr);
+void col_free(TableInfo *info_ptr);
 
 #endif

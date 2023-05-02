@@ -1,6 +1,5 @@
 /**
- * @file
- * Scrubber Driver
+ * @file driver.c
  *
  * TODO: 
  *  - put climate reading into a struct for consistent referencing?
@@ -10,14 +9,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void menu(char **columns) {
+void menu(TableInfo *info_ptr) {
     printf("---------------------------\n");
-    printf("NODE READINGS : \n");
-    for (int i = 0; columns[i] != NULL; i++) {
-        printf("    %s\n", columns[i]);
+    printf("NODE READINGS : %d\n", info_ptr->num_cols);
+    for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
+        printf("    %s\n", info_ptr->columns[i]);
     }   
     printf("---------------------------\n");
     printf("TOTAL ROWS : \n");
+    printf("    %d\n", info_ptr->num_rows);
     printf("---------------------------\n");
 }
 
@@ -34,23 +34,23 @@ int main() {
     // establish connection
     MYSQL *db_con = db_connect(addr, user, pass, db);
     // query column names
-    // MYSQL_RES *col_res = cols(db_con);
-    char **col_arr = col_names(db_con);
+    TableInfo *col_res = get_data(db_con);
+    //char **col_arr = get_data(db_con);
 
-    outliers(db_con, col_arr);
+    //outliers(db_con, col_arr);
 
     // display results
-    menu(col_arr);
+    menu(col_res);
 
     // call scrubber with connection object?
 
     // free memory allocated for column array
-    col_free(col_arr);
+    col_free(col_res);
     //for (int i = 0; col_arr[i] != NULL; i++) {
         // free the memory allocated for each element
         //free(col_arr[i]);
     //}
-    //free(col_arr);
+    //free(col_res);
 
     // close connection
     mysql_close(db_con);

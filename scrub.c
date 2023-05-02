@@ -1,3 +1,6 @@
+/**
+ * @file scrub.c
+ */
 #include "scrub.h"
 #include <mysql.h>
 #include <stdio.h>
@@ -30,17 +33,20 @@ MYSQL *db_connect(char *addr, char *user, char *pass, char *db) {
     return con;
 }
 
-char **col_names(MYSQL *con) {
+TableInfo *get_data(MYSQL *con) {
     // MYSQL result struct
     MYSQL_RES *result;
-    // MYSQL field struct
+    // MYSQL field(column) struct
     MYSQL_FIELD *field;
+    // MYSQL row struct
+    MYSQL_ROW row;
+
     unsigned int num_fields;
     // result array
     char **result_arr;
 
     // query mqtt_data table
-    if (mysql_query(con, "SELECT * FROM mqtt_data LIMIT 0")) {
+    if (mysql_query(con, "SELECT * FROM mqtt_data")) {
         fprintf(stderr, "%s\n", mysql_error(con));
         exit(1);
     }
@@ -51,17 +57,14 @@ char **col_names(MYSQL *con) {
         exit(1);
     }
 
-    // allocate memory for result array TODO : FIXME
-/*
-    result_arr = (char **)malloc(num_fields * sizeof(char *));
-    num_fields = mysql_num_fields(result);
-*/
-    TableInfo* info = (TableInfo*)malloc(sizeof(TableInfo));
-    info->columns = (char**)malloc(num_field * sizeof(char*));
-    info->num_rows = mysql_num_rows(result);
+    // allocate memory for TableInfo struct, column names, num cols, num rows
+    TableInfo *info_ptr = (TableInfo*)malloc(sizeof(TableInfo));
+    info_ptr->num_cols = mysql_num_fields(result);
+    info_ptr->num_rows = mysql_num_rows(result);
+    info_ptr->columns = (char**)malloc(info_ptr->num_cols * sizeof(char*));
 
     // iterate through column names (fields) and populate the result array
-    for (unsigned int i = 0; i < num_fields; i++) {
+    for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
         // field for current column index
         field = mysql_fetch_field_direct(result, i);
 
@@ -69,17 +72,15 @@ char **col_names(MYSQL *con) {
             fprintf(stderr, "%s\n", mysql_error(con));
             exit(1);
         }
-
         // allocate memory for result array elements
-        //result_arr[i] = (char *)malloc(strlen(field->name) + 1);
-        info->columns[i] = (char *)malloc(strlen(field->name) + 1);
+        info_ptr->columns[i] = (char *)malloc(strlen(field->name) + 1);
         // copy column name to result array
-        strcpy(result_arr[i], field->name);
+        strcpy(info_ptr->columns[i], field->name);
     }
-
     // free allocated result memory
     mysql_free_result(result);
-    return result_arr;
+    //return result_arr;
+    return info_ptr;
 }
 
 /*
@@ -155,19 +156,17 @@ scrubber(MYSQL *con) {
 }
 */
 
-void col_free(char **col_arr) {
+void col_free(TableInfo *info_ptr) {
     printf("Freeing memory...\n");
-    if (col_arr) {
-        // traverse until NULL is met
-        for (int i = 0; col_arr[i] != NULL; i++) {
-            // free memory allocated for col_arr elements (table headers)
-            free(col_arr[i]);
-        }
-        // free memory allocated for col_arr variable
-        free(col_arr);
-        printf("\n[+] Memory freed\n");
-    } 
-    else {
-        printf("\n[!] Memory already freed\n");
+    for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
+        // free memory for column elements (col names)
+        free(info_ptr->columns[i]);
     }
+    // free memory for column array
+    free(info_ptr->columns);
+
+    // free TableInfo struct memory
+    free(info_ptr);
+    printf("[+] Memory freed\n");
+
 }
