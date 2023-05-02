@@ -1,29 +1,59 @@
+/**
+ * @file
+ * Scrubber Driver
+ *
+ * TODO: 
+ *  - put climate reading into a struct for consistent referencing?
+ *  - struct for MySQL DB info, connection, db, user, etc.?
+ */
+#include "scrub.h"
 #include <stdio.h>
-#include "threadpool.h"
+#include <stdlib.h>
 
-// function to be executed by the threads in the pool
-void print_message(void *arg) {
-    char *message = (char *)arg;
-    printf("%s\n", message);
+void menu(char **columns) {
+    printf("---------------------------\n");
+    printf("NODE READINGS : \n");
+    for (int i = 0; columns[i] != NULL; i++) {
+        printf("    %s\n", columns[i]);
+    }   
+    printf("---------------------------\n");
+    printf("TOTAL ROWS : \n");
+    printf("---------------------------\n");
 }
 
+/**
+ * @brief main()
+ */
 int main() {
-    // create a threadpool with 4 worker threads
-    threadpool_t *pool = threadpool_create(4);
-    
-    // add tasks to the threadpool
-    threadpool_add_task(pool, print_message, "Hello from task 1");
-    threadpool_add_task(pool, print_message, "Hello from task 2");
-    threadpool_add_task(pool, print_message, "Hello from task 3");
-    threadpool_add_task(pool, print_message, "Hello from task 4");
-    threadpool_add_task(pool, print_message, "Hello from task 5");
-    
-    // wait for tasks to complete
-    threadpool_wait(pool);
-    
-    // destroy the threadpool
-    threadpool_destroy(pool);
-    
+    char addr[] = "localhost";
+    char user[] = "aba275";
+    char pass[] = "";
+    char db[] = "SEEED_WEATHER";
+    char table[] = "mqtt_data";
+
+    // establish connection
+    MYSQL *db_con = db_connect(addr, user, pass, db);
+    // query column names
+    // MYSQL_RES *col_res = cols(db_con);
+    char **col_arr = col_names(db_con);
+
+    outliers(db_con, col_arr);
+
+    // display results
+    menu(col_arr);
+
+    // call scrubber with connection object?
+
+    // free memory allocated for column array
+    col_free(col_arr);
+    //for (int i = 0; col_arr[i] != NULL; i++) {
+        // free the memory allocated for each element
+        //free(col_arr[i]);
+    //}
+    //free(col_arr);
+
+    // close connection
+    mysql_close(db_con);
     return 0;
 }
 
