@@ -5,7 +5,8 @@
  *  - put climate reading into a struct for consistent referencing?
  *  - struct for MySQL DB info, connection, db, user, etc.?
  *  - CLI options/flags? -d delete, confirm deletion
- *  - finding outliers and storing them in a data structure?
+ *  - finding outliers and storing them in a data structure? likely 
+ *    something simple, array, LL, DLL
  *      - find outliers and store ID (col 0) 
  *      - delete on confirmation
  *  - Statistical methods on data, range of data, display data
