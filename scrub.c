@@ -14,13 +14,13 @@ MYSQL *db_connect(char *addr, char *user, char *pass, char *db) {
 
     // verify object is initialized
     if (!con) {
-        fprintf(stderr, "%s\n", mysql_error(con));
+        fprintf(stderr, "[!] Error Initializing Connection Object : %s\n", mysql_error(con));
         exit(1);
     }
 
     // establish connection, close & exit if not successful
     if (!mysql_real_connect(con, addr, user, pass, db, 0, NULL, 0)) {
-        fprintf(stderr, "%s\n", mysql_error(con));
+        fprintf(stderr, "[!] Error Connecting to Database : %s\n", mysql_error(con));
         mysql_close(con);
         exit(1);
     }
@@ -33,7 +33,7 @@ MYSQL *db_connect(char *addr, char *user, char *pass, char *db) {
     return con;
 }
 
-TableInfo *get_data(MYSQL *con) {
+TableInfo *get_info(MYSQL *con) {
     // MYSQL result struct
     MYSQL_RES *result;
     // MYSQL field(column) struct
@@ -52,10 +52,10 @@ TableInfo *get_data(MYSQL *con) {
     }
 
     // allocate memory for TableInfo struct, column names, num cols, num rows
-    TableInfo *info_ptr = (TableInfo*)malloc(sizeof(TableInfo));
+    TableInfo *info_ptr = (TableInfo *)malloc(sizeof(TableInfo));
     info_ptr->num_cols = mysql_num_fields(result);
     info_ptr->num_rows = mysql_num_rows(result);
-    info_ptr->columns = (char**)malloc(info_ptr->num_cols * sizeof(char*));
+    info_ptr->columns = (char **)malloc(info_ptr->num_cols * sizeof(char *));
 
     // iterate through column names (fields) and populate the result array
     for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
@@ -73,84 +73,83 @@ TableInfo *get_data(MYSQL *con) {
     }
     // free allocated result memory
     mysql_free_result(result);
-    //return result_arr;
+    // return result_arr;
     return info_ptr;
 }
 
-/*
-outliers(MYSQL *con, column_name, ) {
-    // define struct for min/max for ranges
-
-    // for all 20 readings, establish baseline set of ranges, given
-    // column names, check if the rows for a given column are in range
-    for (i=0; i < num of rows for given col; i++) {
-        if (row val is not in range) {
-            // print some pretty table of information
-        }
-    }
-    // think of way to return outliers in a easy to use format
-}
-*/
-
-void outliers(MYSQL *con, char **columns) {
-    mysql_query(con, "SELECT * FROM mqtt_data");
-
-    MYSQL_RES *result = mysql_store_result(con);
-
-    unsigned int num_fields = mysql_num_fields(result);
-
+void outliers(MYSQL *connection, char *column_name, double lower, double upper) {
+    MYSQL_RES *result;
     MYSQL_ROW row;
-    MYSQL_FIELD *field;
-
-    unsigned int name_field;
-    char *field_name = "id";
-    char *headers[num_fields];
 
 
 
-    for (unsigned int i = 0; (field = mysql_fetch_field(result)); i++) {
-        headers[i] = field->name;
-        printf("<<<%s\n", field->name);
-        if (strcmp(field_name, headers[i]) == 0) {
-            name_field = i;
+    char query[1024];
+    //snprintf(query, sizeof(query), "SELECT %s FROM mqtt_data WHERE %s >= %f AND %s <= %f", 
+     //       column_name, column_name, lower, column_name, upper);
+    snprintf(query, sizeof(query), "SELECT %s FROM mqtt_data WHERE %s BETWEEN %f AND %f",
+            column_name, column_name, lower, upper);
+
+    // Execute the query and get the result set
+    if (mysql_query(connection, query) != 0) {
+        fprintf(stderr, "Error executing query: %s\n", mysql_error(connection));
+        return;
+    }
+    result = mysql_use_result(connection);
+    // Print the rows
+    int count = 1;
+    while ((row = mysql_fetch_row(result)) != NULL) {
+        double value = atof(row[0]);
+        if (value >= lower && value <= upper) {
+            printf("%d : %s\n", count, row[0]);
         }
-        //printf("%s\n", headers[i]);
-        //printf("  %s\n", columns[i]);
-    }
-    while ((row = mysql_fetch_row(result))) {
-        printf("NAME: %s\n", row[name_field]);
+        count++;
     }
 
-
+    // Free the result set
     mysql_free_result(result);
-    // query; const char *
-    // column name
-    // combine the two? strcat?
-}
-
-// find average over a given time interval
-
-/*
-scrubber(MYSQL *con) {
-    // parse column names
-
-    // define outlier ranges for the 20 fields
-
-    // given column name, check the colums rows for outliers
-
-    // check for NULL/empty data?
-
-    // <---->
-    // Several optimizations can be made
-    // - Merge sort approach, partition data (rows) of each column
-    // - Spawn worker threads for equal parts of the rows
-    // - ThreadPool, for each column name clean it up, each function call can
-    // be a thread
+    // return count of outliers and keys for outliers to drop the row they are in
 
 }
-*/
 
-void col_free(TableInfo *info_ptr) {
+void scrubber(MYSQL *con, TableInfo *info_ptr) {
+    printf("HELLOO\n");
+
+    // traverse columns, for each column name, check if rows are in range
+    //outliers(con, info_ptr, column_name);
+
+    //average(con, info_ptr, column_name);
+
+}
+
+void print_table_rows(MYSQL *connection, char *column_name) {
+    MYSQL_RES *result;
+    MYSQL_ROW row;
+
+    // Construct the SELECT query string
+    char query[1024];
+    snprintf(query, sizeof(query), "SELECT %s FROM mqtt_data LIMIT 5", column_name);
+
+    // Execute the query and get the result set
+    if (mysql_query(connection, query) != 0) {
+        fprintf(stderr, "[!] Error executing query : %s\n", mysql_error(connection));
+        return;
+    }
+    result = mysql_use_result(connection);
+
+    // Print the column header
+    printf("%s\n", column_name);
+
+    // Print the rows
+    while ((row = mysql_fetch_row(result)) != NULL) {
+        printf("%s\n", row[0]);
+    }
+
+    // Free the result set
+    mysql_free_result(result);
+}
+
+
+void free_data(TableInfo *info_ptr) {
     printf("Freeing memory...\n");
     for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
         // free memory for column elements (col names)
@@ -162,5 +161,4 @@ void col_free(TableInfo *info_ptr) {
     // free TableInfo struct memory
     free(info_ptr);
     printf("[+] Memory freed\n");
-
 }
