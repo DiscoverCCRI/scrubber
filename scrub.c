@@ -1,4 +1,6 @@
 /**
+ *
+ *
  * @file scrub.c
  */
 #include "scrub.h"
@@ -8,6 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 // #include "threadpool.hpp"
+//
+//
 
 MYSQL *db_connect(char *addr, char *user, char *pass, char *db) {
     // mysql connection object
@@ -43,12 +47,12 @@ TableInfo *get_info(MYSQL *con) {
     MYSQL_FIELD *field;
     // define array of double to hold upper/lower bounds. see macro defs in
     // constants.h
-    double low_val[64] = {ID_LO,    TIME_LO,     TEMP_LO,     HUM_LO,      PRESS_LO,
+    double low_val[] = {ID_LO,    TIME_LO,     TEMP_LO,     HUM_LO,      PRESS_LO,
                       LIGHT_LO, WIND_DIR_LO, WIND_DIR_LO, WIND_DIR_LO, WIND_LO,
                       WIND_LO,  WIND_LO,     RAIN_LO,     RAIN_LO,     RAIN_LO,
                       RAIN_LO,  TEMP_LO,     DUMP_LO,     PM_LO,       PM_LO};
 
-    double up_val[64] = {ID_HI,    TIME_HI,     TEMP_HI,     HUM_HI,      PRESS_HI,
+    double up_val[] = {ID_HI,    TIME_HI,     TEMP_HI,     HUM_HI,      PRESS_HI,
                       LIGHT_HI, WIND_DIR_HI, WIND_DIR_HI, WIND_DIR_HI, WIND_HI,
                       WIND_HI,  WIND_HI,     RAIN_HI,     RAIN_HI,     RAIN_HI,
                       RAIN_HI,  TEMP_HI,     DUMP_HI,     PM_HI,       PM_HI};
@@ -72,8 +76,8 @@ TableInfo *get_info(MYSQL *con) {
     info_ptr->num_cols = mysql_num_fields(result);
     info_ptr->num_rows = mysql_num_rows(result);
     info_ptr->columns = (char **)malloc(info_ptr->num_cols * sizeof(char *));
-    info_ptr->low = (double **)malloc(info_ptr->num_cols * sizeof(double *));
-    info_ptr->up = (double **)malloc(info_ptr->num_cols * sizeof(double *));
+    info_ptr->rng_min = (double **)malloc(info_ptr->num_cols * sizeof(double *));
+    info_ptr->rng_max = (double **)malloc(info_ptr->num_cols * sizeof(double *));
 
     // iterate through column names (fields) and populate the result array
     for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
@@ -85,13 +89,13 @@ TableInfo *get_info(MYSQL *con) {
         }
         // allocate memory for result array elements and the lower/upper bound array elements
         info_ptr->columns[i] = (char *)malloc(strlen(field->name) + 1);
-        info_ptr->low[i] = (double *)malloc(sizeof(double));
-        info_ptr->up[i] = (double *)malloc(sizeof(double));
+        info_ptr->rng_min[i] = (double *)malloc(sizeof(double));
+        info_ptr->rng_max[i] = (double *)malloc(sizeof(double));
         /*define upper and lower bounds, copy data from defined array into
          * struct upper/lower bound variables. NOTE: struct variables are pointers
          */
-        *info_ptr->low[i] = low_val[i];
-        *info_ptr->up[i] = up_val[i];
+        *info_ptr->rng_min[i] = low_val[i];
+        *info_ptr->rng_max[i] = up_val[i];
         // copy column name to result array
         strcpy(info_ptr->columns[i], field->name);
     }
@@ -101,6 +105,42 @@ TableInfo *get_info(MYSQL *con) {
     return info_ptr;
 }
 
+void outliers(MYSQL *connection, char *column_name, double *lower, double *upper) {
+    MYSQL_RES *result;
+    MYSQL_ROW row;
+
+    char query[1024];
+    // snprintf(query, sizeof(query), "SELECT %s FROM mqtt_data WHERE %s >= %f
+    // AND %s <= %f",
+    //       column_name, column_name, lower, column_name, upper);
+    snprintf(query, sizeof(query),
+             "SELECT %s FROM mqtt_data WHERE %s BETWEEN %f AND %f", column_name,
+             column_name, *lower, *upper);
+
+    // Execute the query and get the result set
+    if (mysql_query(connection, query) != 0) {
+        fprintf(stderr, "Error executing query: %s\n", mysql_error(connection));
+        return;
+    }   
+    result = mysql_use_result(connection);
+    // Print the rows
+    int count = 1;
+    while ((row = mysql_fetch_row(result)) != NULL) {
+        int i = 0;
+        double value = atof(row[i]);
+        //if (value >= *lower && value <= *upper) {
+            printf("%d : %s : %s\n", count++, column_name, row[i]);
+        //}
+        i++;
+        
+    }
+
+    // Free the result set
+    mysql_free_result(result);
+
+}
+
+/*
 void outliers(MYSQL *connection, char *column_name, double lower,
               double upper) {
     MYSQL_RES *result;
@@ -135,7 +175,7 @@ void outliers(MYSQL *connection, char *column_name, double lower,
     // return count of outliers and keys for outliers to drop the row they are
     // in
     //
-}
+}*/
 
 void scrubber(MYSQL *con, TableInfo *info_ptr) {
     printf("HELLOO\n");
@@ -181,14 +221,14 @@ void free_data(TableInfo *info_ptr) {
         // free memory for column elements (col names)
         free(info_ptr->columns[i]);
         // free memory for bounds elements
-        free(info_ptr->low[i]);
-        free(info_ptr->up[i]);
+        free(info_ptr->rng_min[i]);
+        free(info_ptr->rng_max[i]);
     }
     // free memory for column array
     free(info_ptr->columns);
     // free memory for bounds arrays
-    free(info_ptr->low);
-    free(info_ptr->up);
+    free(info_ptr->rng_min);
+    free(info_ptr->rng_max);
     // free TableInfo struct memory
     free(info_ptr);
     printf("[+] Memory freed\n");

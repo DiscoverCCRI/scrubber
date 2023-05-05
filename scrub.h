@@ -17,30 +17,24 @@
  * @brief Struct to hold SQL Table info
  */
 typedef struct {
+    /** array of columns names */
     char **columns;
-    unsigned int num_rows;
+    /** number of columns in table */
     unsigned int num_cols;
-    double **low;
-    double **up;
+    /** number of rows in table */
+    unsigned int num_rows;
+    /** minimum allowed value for given column's rows, see constants.h */
+    double **rng_min; 
+    /** maximum allowed value for given column's rows, see constants.h */
+    double **rng_max;
 } TableInfo;
 
-// typedef struct {
-// char *reading;
-// double lower;
-// double upper;
-//} Ranges;
-
+/**
+ * @brief Struct to hold SQL Table outlier data
+ */
 typedef struct {
-
-    char db_name[BUFFER_SZ];
-    char db_addr[BUFFER_SZ];
-    char db_user[BUFFER_SZ];
-    char db_pass[BUFFER_SZ];
-} DBInfo;
-
-typedef struct {
-    // keys of rows to drop
-    unsigned int keys;
+    /** array of keys from detected outliers to drop data */
+    unsigned int **keys;
 } OutlierData;
 
 /**
@@ -64,8 +58,11 @@ TableInfo *get_info(MYSQL *con);
 /**
  * @brief Function for detecting outliers for weather readings
  */
+//void outliers(MYSQL *connection, char *column_name, TableInfo *info_ptr);
+void outliers(MYSQL *connection, char *column_name, double *lower, double *upper);
+/*
 void outliers(MYSQL *connection, char *column_name, double lower, double upper);
-
+*/
 void print_table_rows(MYSQL *connection, char *column_name);
 
 /**
