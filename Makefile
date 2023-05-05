@@ -10,6 +10,9 @@ compile:
 mem_check:
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --tool=memcheck ./${BIN}
 
+format:
+	find . -regex '.*\.\(c\|cu\|cuh\|cpp\|hpp\|h\|cxx\)' -exec clang-format-9 -style=file -i {} \;
+
 clean:
 	rm ${BIN}
 

@@ -20,8 +20,15 @@ typedef struct {
     char **columns;
     unsigned int num_rows;
     unsigned int num_cols;
-    // reference more?
+    double **low;
+    double **up;
 } TableInfo;
+
+// typedef struct {
+// char *reading;
+// double lower;
+// double upper;
+//} Ranges;
 
 typedef struct {
 

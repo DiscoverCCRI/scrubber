@@ -20,15 +20,15 @@
 #include <stdlib.h>
 
 void menu(TableInfo *info_ptr) {
-    printf("---------------------------\n");
+    printf("\n---------------------------\n");
     printf("NODE READINGS : %d\n", info_ptr->num_cols);
     for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
-        printf("    %s\n", info_ptr->columns[i]);
+        printf("%s   ", info_ptr->columns[i]);
     }
-    printf("---------------------------\n");
+    printf("\n---------------------------\n");
     printf("TOTAL ROWS : \n");
     printf("    %d\n", info_ptr->num_rows);
-    printf("---------------------------\n");
+    printf("\n---------------------------\n");
 }
 
 /**
@@ -41,20 +41,31 @@ int main() {
     char db[] = "TEST_DB";
     // char table[] = "mqtt_data";
 
+    // allocate memory for ranges
+    // TableInfo *info_data =
+    // define ranges for readings
+
     // establish connection
     MYSQL *db_con = db_connect(addr, user, pass, db);
-    // query column names
+    // get table information
     TableInfo *data_res = get_info(db_con);
-    // char **col_arr = get_data(db_con);
 
-    // scrubber(db_con, info_ptr);
+    for (unsigned i = 0 ; i < data_res->num_cols; i++) {
+        printf("%s MIN: %f \n", data_res->columns[i], *data_res->low[i]);
+        printf("%s MAX: %f \n", data_res->columns[i], *data_res->up[i]);
+    }
 
-    //print_table_rows(db_con, data_res->columns[2]);
-    outliers(db_con, data_res->columns[2], 21.03, 21.07);
+    // print_table_rows(db_con, data_res->columns[2]);
+
+    // temperature = 2, pressure = 4
+    // for (unsigned int i = 2; i < 5; i++) {
+    //    outliers(db_con, data_res->);
+    //}
+
+    // outliers(db_con, data_res->columns[2], 21.03, 21.07);
 
     // display results
     menu(data_res);
-
 
     // free memory allocated for column array
     free_data(data_res);
