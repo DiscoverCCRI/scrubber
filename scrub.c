@@ -109,7 +109,7 @@ void outliers(MYSQL *connection, char *column_name, double *lower, double *upper
     MYSQL_RES *result;
     MYSQL_ROW row;
 
-    char query[1024];
+    char query[1024]; // edit this buffer?
     // snprintf(query, sizeof(query), "SELECT %s FROM mqtt_data WHERE %s >= %f
     // AND %s <= %f",
     //       column_name, column_name, lower, column_name, upper);
