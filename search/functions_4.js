@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['main_71',['main',['../driver_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'driver.c']]],
-  ['menu_72',['menu',['../driver_8c.html#a3f58673f47b6b6b46ec1c0453b18ca38',1,'driver.c']]]
+  ['main_69',['main',['../driver_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'driver.c']]],
+  ['menu_70',['menu',['../driver_8c.html#a3f58673f47b6b6b46ec1c0453b18ca38',1,'driver.c']]]
 ];

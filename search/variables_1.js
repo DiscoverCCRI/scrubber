@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keys_80',['keys',['../structOutlierData.html#a01ed8bf2193d88fe0c4160ebba4aa366',1,'OutlierData']]]
+  ['keys_78',['keys',['../structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e',1,'TableInfo']]]
 ];
