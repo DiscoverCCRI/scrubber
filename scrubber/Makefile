@@ -14,7 +14,7 @@ format:
 	find . -regex '.*\.\(c\|cu\|cuh\|cpp\|hpp\|h\|cxx\)' -exec clang-format-9 -style=file -i {} \;
 
 docs:
-	doxygen
+	cd ../ && doxygen
 
 clean:
 	rm ${BIN}
