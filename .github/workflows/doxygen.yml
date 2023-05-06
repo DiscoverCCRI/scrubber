@@ -1,7 +1,9 @@
 name: Build Doxygen Documentation
 
 on:
-  workflow_call:
+  push:
+    branches: 
+      - '**'
 
 jobs:
   deploy:
