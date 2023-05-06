@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['index_2emd_0',['index.md',['../index_8md.html',1,'']]]
+  ['buffer_5fsz_0',['BUFFER_SZ',['../scrub_8h.html#a22ad48d95fdd6689ea92e17ca5bbfccb',1,'scrub.h']]]
 ];
