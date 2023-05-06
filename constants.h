@@ -22,8 +22,8 @@
 #define HUM_LO 0.0 // Relative Humidity %
 #define HUM_HI 100.0
 
-#define PRESS_LO 300.0 // hPa Hectopascals
-#define PRESS_HI 1250.0
+#define PRESS_LO 3000.0 // Pa Pascals
+#define PRESS_HI 12500.0
 
 #define LIGHT_LO 0.0 // Lux
 #define LIGHT_HI 188000.0

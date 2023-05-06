@@ -1,6 +1,4 @@
 /**
- *
- *
  * @file scrub.c
  */
 #include "scrub.h"
@@ -10,8 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 // #include "threadpool.hpp"
-//
-//
 
 MYSQL *db_connect(char *addr, char *user, char *pass, char *db) {
     // mysql connection object
@@ -114,7 +110,7 @@ void outliers(MYSQL *connection, char *column_name, double *lower, double *upper
     // AND %s <= %f",
     //       column_name, column_name, lower, column_name, upper);
     snprintf(query, sizeof(query),
-             "SELECT %s FROM mqtt_data WHERE %s BETWEEN %f AND %f", column_name,
+             "SELECT %s FROM mqtt_data WHERE %s NOT BETWEEN %f AND %f", column_name,
              column_name, *lower, *upper);
 
     // Execute the query and get the result set
