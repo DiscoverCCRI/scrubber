@@ -27,15 +27,9 @@ typedef struct {
     double **rng_min; 
     /** maximum allowed value for given column's rows, see constants.h */
     double **rng_max;
-} TableInfo;
-
-/**
- * @brief Struct to hold SQL Table outlier data
- */
-typedef struct {
     /** array of keys from detected outliers to drop data */
     unsigned int **keys;
-} OutlierData;
+} TableInfo;
 
 /**
  * @brief Establishes a MariaDB/MySQL connection and returns a MYSQL pointer

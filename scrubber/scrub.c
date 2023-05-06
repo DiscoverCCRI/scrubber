@@ -104,13 +104,11 @@ TableInfo *get_info(MYSQL *con) {
 void outliers(MYSQL *connection, char *column_name, double *lower, double *upper) {
     MYSQL_RES *result;
     MYSQL_ROW row;
+    unsigned int id;
 
-    char query[1024]; // edit this buffer?
-    // snprintf(query, sizeof(query), "SELECT %s FROM mqtt_data WHERE %s >= %f
-    // AND %s <= %f",
-    //       column_name, column_name, lower, column_name, upper);
+    char query[1024]; // TODO: edit this buffer?
     snprintf(query, sizeof(query),
-             "SELECT %s FROM mqtt_data WHERE %s NOT BETWEEN %f AND %f", column_name,
+             "SELECT id, %s FROM mqtt_data WHERE %s NOT BETWEEN %f AND %f", column_name,
              column_name, *lower, *upper);
 
     // Execute the query and get the result set
@@ -123,9 +121,10 @@ void outliers(MYSQL *connection, char *column_name, double *lower, double *upper
     int count = 1;
     while ((row = mysql_fetch_row(result)) != NULL) {
         int i = 0;
+        id = atoi(row[i++]);
         double value = atof(row[i]);
         //if (value >= *lower && value <= *upper) {
-            printf("%d : %s : %s\n", count++, column_name, row[i]);
+            printf("%d : id=%u %s : %s\n", count++, id, column_name, row[i]);
         //}
         i++;
         
@@ -136,42 +135,6 @@ void outliers(MYSQL *connection, char *column_name, double *lower, double *upper
 
 }
 
-/*
-void outliers(MYSQL *connection, char *column_name, double lower,
-              double upper) {
-    MYSQL_RES *result;
-    MYSQL_ROW row;
-
-    char query[1024];
-    // snprintf(query, sizeof(query), "SELECT %s FROM mqtt_data WHERE %s >= %f
-    // AND %s <= %f",
-    //       column_name, column_name, lower, column_name, upper);
-    snprintf(query, sizeof(query),
-             "SELECT %s FROM mqtt_data WHERE %s BETWEEN %f AND %f", column_name,
-             column_name, lower, upper);
-
-    // Execute the query and get the result set
-    if (mysql_query(connection, query) != 0) {
-        fprintf(stderr, "Error executing query: %s\n", mysql_error(connection));
-        return;
-    }
-    result = mysql_use_result(connection);
-    // Print the rows
-    int count = 1;
-    while ((row = mysql_fetch_row(result)) != NULL) {
-        double value = atof(row[0]);
-        if (value >= lower && value <= upper) {
-            printf("%d : %s\n", count, row[0]);
-        }
-        count++;
-    }
-
-    // Free the result set
-    mysql_free_result(result);
-    // return count of outliers and keys for outliers to drop the row they are
-    // in
-    //
-}*/
 
 void scrubber(MYSQL *con, TableInfo *info_ptr) {
     printf("HELLOO\n");
