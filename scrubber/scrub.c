@@ -127,21 +127,27 @@ TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
     // allocate memory for keys
     info_ptr->keys =
         (unsigned int **)malloc(info_ptr->num_rows * sizeof(unsigned int *));
-    // Print the rows
-    int count = 1;
+    /** static count; static to keep change between state (between function calls) */
+    static int count = 1;
+    int key_idx = 1;
+    // loop until the end of results found
     while ((row = mysql_fetch_row(result)) != NULL) {
         int i = 0;
         id = atoi(row[i++]);
         double value = atof(row[i]);
         // if (value >= *lower && value <= *upper) {
-       // printf("%d : id=%u %s : %s\n", count++, id, column_name, row[i]);
+        // print the rows
+        //printf("%d \t :id= \t %u \t %s \t : \t %s\n", 
+        //        count++, id, column_name, row[i]);
         //}
         // allocate memory for keys elements
-        info_ptr->keys[i] = (unsigned int *)malloc(sizeof(unsigned int));
+        info_ptr->keys[key_idx] = (unsigned int *)malloc(sizeof(unsigned int));
         // populate elements
-        *info_ptr->keys[i] = id;
-        //i++;
+        *info_ptr->keys[key_idx] = id;
+        key_idx++;
     }
+    // populate number of keys (outliers)
+    info_ptr->num_keys = count;
 
     // Free the result set
     mysql_free_result(result);

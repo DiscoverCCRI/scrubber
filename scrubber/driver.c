@@ -58,10 +58,16 @@ int main() {
     */
     // print_table_rows(db_con, data_res->columns[2]);
 
-    // temperature = 2, pressure = 4
+    // TODO: rethink logic on populating TableInfo keys array using outliers function
+    // outliers function finds outliers of a given column's rows and append the 
+    // keys (row number) to an array to hold them (data_res->keys[i])
     for (unsigned int i = 0; i < data_res->num_cols; i++) {
-        outliers(db_con, data_res, data_res->columns[i], data_res->rng_min[i],
+        data_res = outliers(db_con, data_res, data_res->columns[i], data_res->rng_min[i],
                  data_res->rng_max[i]);
+    }
+    printf("OUTLIERS: %d\n", data_res->num_keys);
+    for (unsigned int i = 0; i < data_res->num_keys; i++) {
+        printf("KEY : %ls", data_res->keys[i]);
     }
 
     // outliers(db_con, data_res->columns[2], 21.03, 21.07);
