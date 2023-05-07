@@ -22,10 +22,10 @@
 void menu(TableInfo *info_ptr) {
     printf("\n---------------------------\n");
     printf("SenseCAP900 NODE READINGS & BOUNDS : %d\n", info_ptr->num_cols);
-    for (unsigned i = 0 ; i < info_ptr->num_cols; i++) {
-        printf("%s MIN : %f MAX : %f \n", info_ptr->columns[i], 
-                *info_ptr->rng_min[i], *info_ptr->rng_max[i]);
-    }   
+    for (unsigned i = 0; i < info_ptr->num_cols; i++) {
+        printf("%s MIN : %f MAX : %f \n", info_ptr->columns[i],
+               *info_ptr->rng_min[i], *info_ptr->rng_max[i]);
+    }
     printf("\n---------------------------\n");
     printf("TOTAL ROWS : \n");
     printf("    %d\n", info_ptr->num_rows);
@@ -50,22 +50,21 @@ int main() {
     MYSQL *db_con = db_connect(addr, user, pass, db);
     // get table information
     TableInfo *data_res = get_info(db_con);
-/*
-    for (unsigned i = 0 ; i < data_res->num_cols; i++) {
-        printf("%s MIN: %f MAX: %f \n", data_res->columns[i], 
-                *data_res->low[i], *data_res->up[i]);
-    }
-*/
+    /*
+        for (unsigned i = 0 ; i < data_res->num_cols; i++) {
+            printf("%s MIN: %f MAX: %f \n", data_res->columns[i],
+                    *data_res->low[i], *data_res->up[i]);
+        }
+    */
     // print_table_rows(db_con, data_res->columns[2]);
 
     // temperature = 2, pressure = 4
     for (unsigned int i = 0; i < data_res->num_cols; i++) {
-        outliers(db_con, data_res->columns[i], data_res->rng_min[i], 
-                data_res->rng_max[i]);
+        outliers(db_con, data_res, data_res->columns[i], data_res->rng_min[i],
+                 data_res->rng_max[i]);
     }
 
-
-    //outliers(db_con, data_res->columns[2], 21.03, 21.07);
+    // outliers(db_con, data_res->columns[2], 21.03, 21.07);
 
     // display results
     menu(data_res);

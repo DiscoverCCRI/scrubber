@@ -43,18 +43,20 @@ TableInfo *get_info(MYSQL *con) {
     MYSQL_FIELD *field;
     // define array of double to hold upper/lower bounds. see macro defs in
     // constants.h
-    double low_val[] = {ID_LO,    TIME_LO,     TEMP_LO,     HUM_LO,      PRESS_LO,
-                      LIGHT_LO, WIND_DIR_LO, WIND_DIR_LO, WIND_DIR_LO, WIND_LO,
-                      WIND_LO,  WIND_LO,     RAIN_LO,     RAIN_LO,     RAIN_LO,
-                      RAIN_LO,  TEMP_LO,     DUMP_LO,     PM_LO,       PM_LO};
+    double low_val[] = {ID_LO,       TIME_LO,  TEMP_LO,     HUM_LO,
+                        PRESS_LO,    LIGHT_LO, WIND_DIR_LO, WIND_DIR_LO,
+                        WIND_DIR_LO, WIND_LO,  WIND_LO,     WIND_LO,
+                        RAIN_LO,     RAIN_LO,  RAIN_LO,     RAIN_LO,
+                        TEMP_LO,     DUMP_LO,  PM_LO,       PM_LO};
 
-    double up_val[] = {ID_HI,    TIME_HI,     TEMP_HI,     HUM_HI,      PRESS_HI,
-                      LIGHT_HI, WIND_DIR_HI, WIND_DIR_HI, WIND_DIR_HI, WIND_HI,
-                      WIND_HI,  WIND_HI,     RAIN_HI,     RAIN_HI,     RAIN_HI,
-                      RAIN_HI,  TEMP_HI,     DUMP_HI,     PM_HI,       PM_HI};
+    double up_val[] = {ID_HI,       TIME_HI,  TEMP_HI,     HUM_HI,
+                       PRESS_HI,    LIGHT_HI, WIND_DIR_HI, WIND_DIR_HI,
+                       WIND_DIR_HI, WIND_HI,  WIND_HI,     WIND_HI,
+                       RAIN_HI,     RAIN_HI,  RAIN_HI,     RAIN_HI,
+                       TEMP_HI,     DUMP_HI,  PM_HI,       PM_HI};
     // initialize as arrays
-    //double *lower = low_val;
-    //double *upper = up_val;
+    // double *lower = low_val;
+    // double *upper = up_val;
 
     // query mqtt_data table
     if (mysql_query(con, "SELECT * FROM mqtt_data")) {
@@ -72,8 +74,10 @@ TableInfo *get_info(MYSQL *con) {
     info_ptr->num_cols = mysql_num_fields(result);
     info_ptr->num_rows = mysql_num_rows(result);
     info_ptr->columns = (char **)malloc(info_ptr->num_cols * sizeof(char *));
-    info_ptr->rng_min = (double **)malloc(info_ptr->num_cols * sizeof(double *));
-    info_ptr->rng_max = (double **)malloc(info_ptr->num_cols * sizeof(double *));
+    info_ptr->rng_min =
+        (double **)malloc(info_ptr->num_cols * sizeof(double *));
+    info_ptr->rng_max =
+        (double **)malloc(info_ptr->num_cols * sizeof(double *));
 
     // iterate through column names (fields) and populate the result array
     for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
@@ -83,12 +87,14 @@ TableInfo *get_info(MYSQL *con) {
             fprintf(stderr, "%s\n", mysql_error(con));
             exit(1);
         }
-        // allocate memory for result array elements and the lower/upper bound array elements
+        // allocate memory for result array elements and the lower/upper bound
+        // array elements
         info_ptr->columns[i] = (char *)malloc(strlen(field->name) + 1);
         info_ptr->rng_min[i] = (double *)malloc(sizeof(double));
         info_ptr->rng_max[i] = (double *)malloc(sizeof(double));
         /*define upper and lower bounds, copy data from defined array into
-         * struct upper/lower bound variables. NOTE: struct variables are pointers
+         * struct upper/lower bound variables. NOTE: struct variables are
+         * pointers
          */
         *info_ptr->rng_min[i] = low_val[i];
         *info_ptr->rng_max[i] = up_val[i];
@@ -101,40 +107,46 @@ TableInfo *get_info(MYSQL *con) {
     return info_ptr;
 }
 
-void outliers(MYSQL *connection, char *column_name, double *lower, double *upper) {
+TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
+              double *lower, double *upper) {
     MYSQL_RES *result;
     MYSQL_ROW row;
     unsigned int id;
 
     char query[1024]; // TODO: edit this buffer?
     snprintf(query, sizeof(query),
-             "SELECT id, %s FROM mqtt_data WHERE %s NOT BETWEEN %f AND %f", column_name,
-             column_name, *lower, *upper);
+             "SELECT id, %s FROM mqtt_data WHERE %s NOT BETWEEN %f AND %f",
+             column_name, column_name, *lower, *upper);
 
     // Execute the query and get the result set
     if (mysql_query(connection, query) != 0) {
         fprintf(stderr, "Error executing query: %s\n", mysql_error(connection));
         return;
-    }   
+    }
     result = mysql_use_result(connection);
+    // allocate memory for keys
+    info_ptr->keys =
+        (unsigned int **)malloc(info_ptr->num_rows * sizeof(unsigned int *));
     // Print the rows
     int count = 1;
     while ((row = mysql_fetch_row(result)) != NULL) {
         int i = 0;
         id = atoi(row[i++]);
         double value = atof(row[i]);
-        //if (value >= *lower && value <= *upper) {
-            printf("%d : id=%u %s : %s\n", count++, id, column_name, row[i]);
+        // if (value >= *lower && value <= *upper) {
+       // printf("%d : id=%u %s : %s\n", count++, id, column_name, row[i]);
         //}
-        i++;
-        
+        // allocate memory for keys elements
+        info_ptr->keys[i] = (unsigned int *)malloc(sizeof(unsigned int));
+        // populate elements
+        *info_ptr->keys[i] = id;
+        //i++;
     }
 
     // Free the result set
     mysql_free_result(result);
-
+    return info_ptr;
 }
-
 
 void scrubber(MYSQL *con, TableInfo *info_ptr) {
     printf("HELLOO\n");
@@ -176,19 +188,20 @@ void print_table_rows(MYSQL *connection, char *column_name) {
 
 void free_data(TableInfo *info_ptr) {
     printf("Freeing memory...\n");
+    // free column names and ranges
     for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
-        // free memory for column elements (col names)
         free(info_ptr->columns[i]);
-        // free memory for bounds elements
         free(info_ptr->rng_min[i]);
         free(info_ptr->rng_max[i]);
-    }
-    // free memory for column array
+    }   
+
     free(info_ptr->columns);
-    // free memory for bounds arrays
     free(info_ptr->rng_min);
     free(info_ptr->rng_max);
-    // free TableInfo struct memory
+
+
+    // free TableInfo struct
     free(info_ptr);
+
     printf("[+] Memory freed\n");
 }

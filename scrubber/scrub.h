@@ -24,7 +24,7 @@ typedef struct {
     /** number of rows in table */
     unsigned int num_rows;
     /** minimum allowed value for given column's rows, see constants.h */
-    double **rng_min; 
+    double **rng_min;
     /** maximum allowed value for given column's rows, see constants.h */
     double **rng_max;
     /** array of keys from detected outliers to drop data */
@@ -52,11 +52,10 @@ TableInfo *get_info(MYSQL *con);
 /**
  * @brief Function for detecting outliers for weather readings
  */
-//void outliers(MYSQL *connection, char *column_name, TableInfo *info_ptr);
-void outliers(MYSQL *connection, char *column_name, double *lower, double *upper);
-/*
-void outliers(MYSQL *connection, char *column_name, double lower, double upper);
-*/
+// void outliers(MYSQL *connection, char *column_name, TableInfo *info_ptr);
+TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
+              double *lower, double *upper);
+
 void print_table_rows(MYSQL *connection, char *column_name);
 
 /**
