@@ -120,59 +120,62 @@ Functions</h2></td></tr>
 
 <p><a class="el" href="driver_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="main()">main()</a> </p>
 
-<p class="definition">Definition at line <a class="el" href="driver_8c_source.html#l00038">38</a> of file <a class="el" href="driver_8c_source.html">driver.c</a>.</p>
-<div class="fragment"><div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;           {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">char</span> addr[] = <span class="stringliteral">&quot;localhost&quot;</span>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">char</span> user[] = <span class="stringliteral">&quot;aba275&quot;</span>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">char</span> pass[] = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">char</span> db[] = <span class="stringliteral">&quot;TEST_DB&quot;</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="comment">// char table[] = &quot;mqtt_data&quot;;</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="comment">// allocate memory for ranges</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="comment">// TableInfo *info_data =</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">// define ranges for readings</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="comment">// establish connection</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    MYSQL *db_con = <a class="code" href="scrub_8c.html#aa7e8c0a0a85015239bbac4ce9fe081ce">db_connect</a>(addr, user, pass, db);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">// get table information</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="structTableInfo.html">TableInfo</a> *data_res = <a class="code" href="scrub_8c.html#a4e02a32d77cb8aeb521208834ab8205c">get_info</a>(db_con);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="comment">/*</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">        for (unsigned i = 0 ; i &lt; data_res-&gt;num_cols; i++) {</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">            printf(&quot;%s MIN: %f MAX: %f \n&quot;, data_res-&gt;columns[i],</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">                    *data_res-&gt;low[i], *data_res-&gt;up[i]);</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">        }</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">    */</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="comment">// print_table_rows(db_con, data_res-&gt;columns[2]);</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="comment">// TODO: rethink logic on populating TableInfo keys array using outliers function</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="comment">// outliers function finds outliers of a given column&#39;s rows and append the </span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="comment">// keys (row number) to an array to hold them (data_res-&gt;keys[i])</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; data_res-&gt;<a class="code" href="structTableInfo.html#a8aad4de662882540a93323cf5f4ed14e">num_cols</a>; i++) {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        data_res = <a class="code" href="scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087">outliers</a>(db_con, data_res, data_res-&gt;<a class="code" href="structTableInfo.html#af364d365d580a5dbb7b8b5c6d4889e36">columns</a>[i], data_res-&gt;<a class="code" href="structTableInfo.html#af6591c200205d2be5931d96fb599b393">rng_min</a>[i],</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                 data_res-&gt;<a class="code" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">rng_max</a>[i]);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    }</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    printf(<span class="stringliteral">&quot;OUTLIERS: %d\n&quot;</span>, data_res-&gt;<a class="code" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">num_keys</a>);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; data_res-&gt;<a class="code" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">num_keys</a>; i++) {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        printf(<span class="stringliteral">&quot;KEY : %ls&quot;</span>, data_res-&gt;<a class="code" href="structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e">keys</a>[i]);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="comment">// outliers(db_con, data_res-&gt;columns[2], 21.03, 21.07);</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="comment">// display results</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="driver_8c.html#a3f58673f47b6b6b46ec1c0453b18ca38">menu</a>(data_res);</div>
+<p class="definition">Definition at line <a class="el" href="driver_8c_source.html#l00040">40</a> of file <a class="el" href="driver_8c_source.html">driver.c</a>.</p>
+<div class="fragment"><div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;           {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">char</span> addr[] = <span class="stringliteral">&quot;localhost&quot;</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">char</span> user[] = <span class="stringliteral">&quot;aba275&quot;</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">char</span> pass[] = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">char</span> db[] = <span class="stringliteral">&quot;TEST_DB&quot;</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="comment">// char table[] = &quot;mqtt_data&quot;;</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">// allocate memory for ranges</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">// TableInfo *info_data =</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="comment">// define ranges for readings</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">// establish connection</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    MYSQL *db_con = <a class="code" href="scrub_8c.html#aa7e8c0a0a85015239bbac4ce9fe081ce">db_connect</a>(addr, user, pass, db);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="comment">// get table information</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="structTableInfo.html">TableInfo</a> *data_res = <a class="code" href="scrub_8c.html#a4e02a32d77cb8aeb521208834ab8205c">get_info</a>(db_con);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">        for (unsigned i = 0 ; i &lt; data_res-&gt;num_cols; i++) {</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">            printf(&quot;%s MIN: %f MAX: %f \n&quot;, data_res-&gt;columns[i],</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">                    *data_res-&gt;low[i], *data_res-&gt;up[i]);</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">        }</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">    */</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="comment">// print_table_rows(db_con, data_res-&gt;columns[2]);</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="comment">// TODO: rethink logic on populating TableInfo keys array using outliers function</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="comment">// outliers function finds outliers of a given column&#39;s rows and append the </span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// keys (row number) to an array to hold them (data_res-&gt;keys[i])</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; data_res-&gt;<a class="code" href="structTableInfo.html#a8aad4de662882540a93323cf5f4ed14e">num_cols</a>; i++) {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        data_res = <a class="code" href="scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087">outliers</a>(db_con, data_res, data_res-&gt;<a class="code" href="structTableInfo.html#af364d365d580a5dbb7b8b5c6d4889e36">columns</a>[i], data_res-&gt;<a class="code" href="structTableInfo.html#af6591c200205d2be5931d96fb599b393">rng_min</a>[i],</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                 data_res-&gt;<a class="code" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">rng_max</a>[i]);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    }</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; data_res-&gt;<a class="code" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">num_keys</a>; i++) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        printf(<span class="stringliteral">&quot;%u &quot;</span>, *data_res-&gt;<a class="code" href="structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e">keys</a>[i]);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="comment">//for (unsigned int i = 0; i &lt; data_res-&gt;num_keys; i++) {</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="comment">//    printf(&quot;KEY : %ls&quot;, data_res-&gt;keys[i]);</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="comment">//}</span></div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">// free memory allocated for column array</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <a class="code" href="scrub_8c.html#a685167f863ec1f08ecd1a021dec0259a">free_data</a>(data_res);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">// close connection</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    mysql_close(db_con);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">// outliers(db_con, data_res-&gt;columns[2], 21.03, 21.07);</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// display results</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <a class="code" href="driver_8c.html#a3f58673f47b6b6b46ec1c0453b18ca38">menu</a>(data_res);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="comment">// free memory allocated for column array</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <a class="code" href="scrub_8c.html#a685167f863ec1f08ecd1a021dec0259a">free_data</a>(data_res);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">// close connection</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    mysql_close(db_con);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}</div>
 <div class="ttc" id="adriver_8c_html_a3f58673f47b6b6b46ec1c0453b18ca38"><div class="ttname"><a href="driver_8c.html#a3f58673f47b6b6b46ec1c0453b18ca38">menu</a></div><div class="ttdeci">void menu(TableInfo *info_ptr)</div><div class="ttdef"><b>Definition:</b> <a href="driver_8c_source.html#l00022">driver.c:22</a></div></div>
 <div class="ttc" id="ascrub_8c_html_a4e02a32d77cb8aeb521208834ab8205c"><div class="ttname"><a href="scrub_8c.html#a4e02a32d77cb8aeb521208834ab8205c">get_info</a></div><div class="ttdeci">TableInfo * get_info(MYSQL *con)</div><div class="ttdoc">Retrieve table information, column names, number of columns, number of rows.</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8c_source.html#l00039">scrub.c:39</a></div></div>
-<div class="ttc" id="ascrub_8c_html_a685167f863ec1f08ecd1a021dec0259a"><div class="ttname"><a href="scrub_8c.html#a685167f863ec1f08ecd1a021dec0259a">free_data</a></div><div class="ttdeci">void free_data(TableInfo *info_ptr)</div><div class="ttdoc">Function for freeing memory allocated by TableInfo struct.</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8c_source.html#l00195">scrub.c:195</a></div></div>
+<div class="ttc" id="ascrub_8c_html_a685167f863ec1f08ecd1a021dec0259a"><div class="ttname"><a href="scrub_8c.html#a685167f863ec1f08ecd1a021dec0259a">free_data</a></div><div class="ttdeci">void free_data(TableInfo *info_ptr)</div><div class="ttdoc">Function for freeing memory allocated by TableInfo struct.</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8c_source.html#l00200">scrub.c:200</a></div></div>
 <div class="ttc" id="ascrub_8c_html_aa7e8c0a0a85015239bbac4ce9fe081ce"><div class="ttname"><a href="scrub_8c.html#aa7e8c0a0a85015239bbac4ce9fe081ce">db_connect</a></div><div class="ttdeci">MYSQL * db_connect(char *addr, char *user, char *pass, char *db)</div><div class="ttdoc">Establishes a MariaDB/MySQL connection and returns a MYSQL pointer.</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8c_source.html#l00012">scrub.c:12</a></div></div>
-<div class="ttc" id="ascrub_8c_html_adffd6f1700b62ec1755ca1b7a7392087"><div class="ttname"><a href="scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087">outliers</a></div><div class="ttdeci">TableInfo * outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name, double *lower, double *upper)</div><div class="ttdoc">Function for detecting outliers for weather readings.</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8c_source.html#l00110">scrub.c:110</a></div></div>
+<div class="ttc" id="ascrub_8c_html_adffd6f1700b62ec1755ca1b7a7392087"><div class="ttname"><a href="scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087">outliers</a></div><div class="ttdeci">TableInfo * outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name, double *lower, double *upper)</div><div class="ttdoc">Function for detecting outliers for weather readings.</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8c_source.html#l00118">scrub.c:118</a></div></div>
 <div class="ttc" id="astructTableInfo_html"><div class="ttname"><a href="structTableInfo.html">TableInfo</a></div><div class="ttdoc">Struct to hold SQL Table info.</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00019">scrub.h:19</a></div></div>
 <div class="ttc" id="astructTableInfo_html_a154cef37fecb2b583e9a2a2162d5cadf"><div class="ttname"><a href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">TableInfo::rng_max</a></div><div class="ttdeci">double ** rng_max</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00029">scrub.h:29</a></div></div>
 <div class="ttc" id="astructTableInfo_html_a2bf67cd2d3b7e4382b17e6aed413d8f8"><div class="ttname"><a href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">TableInfo::num_keys</a></div><div class="ttdeci">unsigned int num_keys</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00033">scrub.h:33</a></div></div>
@@ -210,13 +213,15 @@ Functions</h2></td></tr>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;               *info_ptr-&gt;<a class="code" href="structTableInfo.html#af6591c200205d2be5931d96fb599b393">rng_min</a>[i], *info_ptr-&gt;<a class="code" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">rng_max</a>[i]);</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    }</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    printf(<span class="stringliteral">&quot;\n---------------------------\n&quot;</span>);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    printf(<span class="stringliteral">&quot;TOTAL ROWS : \n&quot;</span>);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    printf(<span class="stringliteral">&quot;    %d\n&quot;</span>, info_ptr-&gt;<a class="code" href="structTableInfo.html#a1b29dbbfbab9eb2ed52c5005712b8fb4">num_rows</a>);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    printf(<span class="stringliteral">&quot;\n---------------------------\n&quot;</span>);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    printf(<span class="stringliteral">&quot;OUTLIERS: %d\n&quot;</span>, info_ptr-&gt;<a class="code" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">num_keys</a>);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    printf(<span class="stringliteral">&quot;\n---------------------------\n&quot;</span>);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    printf(<span class="stringliteral">&quot;TOTAL ROWS : \n&quot;</span>);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    printf(<span class="stringliteral">&quot;    %d\n&quot;</span>, info_ptr-&gt;<a class="code" href="structTableInfo.html#a1b29dbbfbab9eb2ed52c5005712b8fb4">num_rows</a>);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    printf(<span class="stringliteral">&quot;\n---------------------------\n&quot;</span>);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
 <div class="ttc" id="astructTableInfo_html_a1b29dbbfbab9eb2ed52c5005712b8fb4"><div class="ttname"><a href="structTableInfo.html#a1b29dbbfbab9eb2ed52c5005712b8fb4">TableInfo::num_rows</a></div><div class="ttdeci">unsigned int num_rows</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00025">scrub.h:25</a></div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="structTableInfo.html#af364d365d580a5dbb7b8b5c6d4889e36">TableInfo::columns</a>, <a class="el" href="structTableInfo.html#a8aad4de662882540a93323cf5f4ed14e">TableInfo::num_cols</a>, <a class="el" href="structTableInfo.html#a1b29dbbfbab9eb2ed52c5005712b8fb4">TableInfo::num_rows</a>, <a class="el" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">TableInfo::rng_max</a>, and <a class="el" href="structTableInfo.html#af6591c200205d2be5931d96fb599b393">TableInfo::rng_min</a>.</p>
+<p class="reference">References <a class="el" href="structTableInfo.html#af364d365d580a5dbb7b8b5c6d4889e36">TableInfo::columns</a>, <a class="el" href="structTableInfo.html#a8aad4de662882540a93323cf5f4ed14e">TableInfo::num_cols</a>, <a class="el" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">TableInfo::num_keys</a>, <a class="el" href="structTableInfo.html#a1b29dbbfbab9eb2ed52c5005712b8fb4">TableInfo::num_rows</a>, <a class="el" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">TableInfo::rng_max</a>, and <a class="el" href="structTableInfo.html#af6591c200205d2be5931d96fb599b393">TableInfo::rng_min</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="driver_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main()</a>.</p>
 
