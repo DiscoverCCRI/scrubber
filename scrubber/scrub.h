@@ -31,7 +31,6 @@ typedef struct {
     unsigned int **keys;
     /** number of outliers */
     unsigned int num_keys;
-
 } TableInfo;
 
 /**
@@ -53,9 +52,17 @@ MYSQL *db_connect(char *addr, char *user, char *pass, char *db);
 TableInfo *get_info(MYSQL *con);
 
 /**
- * @brief Function for detecting outliers for weather readings
+ * @brief Given an upper and lower bound, determine if a given column name's
+ * rows are outside the given bounds and append an array with the keys of rows
+ * not in range
+ * @param connection pointer to a MySQL connection object
+ * @param info_ptr pointer to TableInfo struct that holds data about table
+ * @param column_name The name of the column to query
+ * @param lower pointer to a double that holds the lower bound of the range
+ * @param upper pointer to a double that holds the upper bound of the range
+ * @return pointer to a TableInfo struct that contains the newly populated 
+ * info_ptr->keys array
  */
-// void outliers(MYSQL *connection, char *column_name, TableInfo *info_ptr);
 TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
               double *lower, double *upper);
 
