@@ -43,6 +43,12 @@ TableInfo *get_info(MYSQL *con) {
     MYSQL_FIELD *field;
     // define array of double to hold upper/lower bounds. see macro defs in
     // constants.h
+    //
+    // TODO: edit these upper/lower bound arrays to be more dynamic c
+    //  - constants for S900 weather station are not universal to other metrics
+    //  that could be analyzed
+    //  - perhaps define file of constants and create way to read the values set
+    //  in there?
     double low_val[] = {ID_LO,       TIME_LO,  TEMP_LO,     HUM_LO,
                         PRESS_LO,    LIGHT_LO, WIND_DIR_LO, WIND_DIR_LO,
                         WIND_DIR_LO, WIND_LO,  WIND_LO,     WIND_LO,
@@ -54,9 +60,6 @@ TableInfo *get_info(MYSQL *con) {
                        WIND_DIR_HI, WIND_HI,  WIND_HI,     WIND_HI,
                        RAIN_HI,     RAIN_HI,  RAIN_HI,     RAIN_HI,
                        TEMP_HI,     DUMP_HI,  PM_HI,       PM_HI};
-    // initialize as arrays
-    // double *lower = low_val;
-    // double *upper = up_val;
 
     // query mqtt_data table
     if (mysql_query(con, "SELECT * FROM mqtt_data")) {
@@ -69,13 +72,18 @@ TableInfo *get_info(MYSQL *con) {
         fprintf(stderr, "%s\n", mysql_error(con));
         exit(1);
     }
-    // allocate memory for TableInfo struct, column names, num cols, num rows
+    // allocate memory for TableInfo struct
     TableInfo *info_ptr = (TableInfo *)malloc(sizeof(TableInfo));
+    // set number of columns = to return of mysql_num_fields()
     info_ptr->num_cols = mysql_num_fields(result);
+    // set number of rows = to return of mysql_num_rows()
     info_ptr->num_rows = mysql_num_rows(result);
+    // allocate memory for columns array
     info_ptr->columns = (char **)malloc(info_ptr->num_cols * sizeof(char *));
+    // allocate memory for array holding lower bound ranges
     info_ptr->rng_min =
         (double **)malloc(info_ptr->num_cols * sizeof(double *));
+    // allocated memory for array holding upper bound ranges
     info_ptr->rng_max =
         (double **)malloc(info_ptr->num_cols * sizeof(double *));
 
@@ -92,7 +100,7 @@ TableInfo *get_info(MYSQL *con) {
         info_ptr->columns[i] = (char *)malloc(strlen(field->name) + 1);
         info_ptr->rng_min[i] = (double *)malloc(sizeof(double));
         info_ptr->rng_max[i] = (double *)malloc(sizeof(double));
-        /*define upper and lower bounds, copy data from defined array into
+        /* define upper and lower bounds, copy data from defined array into
          * struct upper/lower bound variables. NOTE: struct variables are
          * pointers
          */
@@ -108,48 +116,45 @@ TableInfo *get_info(MYSQL *con) {
 }
 
 TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
-              double *lower, double *upper) {
+                    double *lower, double *upper) {
     MYSQL_RES *result;
     MYSQL_ROW row;
     unsigned int id;
 
-    char query[1024]; // TODO: edit this buffer?
+    char query[1024];
+    // query a column not in its range and the id of this row of data
     snprintf(query, sizeof(query),
              "SELECT id, %s FROM mqtt_data WHERE %s NOT BETWEEN %f AND %f",
              column_name, column_name, *lower, *upper);
 
-    // Execute the query and get the result set
     if (mysql_query(connection, query) != 0) {
         fprintf(stderr, "Error executing query: %s\n", mysql_error(connection));
-        return;
+        exit(1);
     }
-    result = mysql_use_result(connection);
-    // allocate memory for keys
-    info_ptr->keys =
-        (unsigned int **)malloc(info_ptr->num_rows * sizeof(unsigned int *));
-    /** static count; static to keep change between state (between function calls) */
-    static int count = 1;
-    int key_idx = 1;
-    // loop until the end of results found
-    while ((row = mysql_fetch_row(result)) != NULL) {
-        int i = 0;
-        id = atoi(row[i++]);
-        double value = atof(row[i]);
-        // if (value >= *lower && value <= *upper) {
-        // print the rows
-        //printf("%d \t :id= \t %u \t %s \t : \t %s\n", 
-        //        count++, id, column_name, row[i]);
-        //}
-        // allocate memory for keys elements
-        info_ptr->keys[key_idx] = (unsigned int *)malloc(sizeof(unsigned int));
-        // populate elements
-        *info_ptr->keys[key_idx] = id;
-        key_idx++;
-    }
-    // populate number of keys (outliers)
-    info_ptr->num_keys = count;
 
-    // Free the result set
+    result = mysql_use_result(connection);
+    /** static variables to keep count of the count and id's we query */
+    static int key_idx = 0;
+    static unsigned int count = 0;
+    while ((row = mysql_fetch_row(result)) != NULL) {
+        id = atoi(row[0]);
+        double value = atof(row[1]);
+        printf("%u: id=%u, %s=%f\n", ++count, id, column_name, value);
+
+        // Reallocate the memory for keys array
+        /** instead of continuously allocating memory reallocate to save the state between
+         * function calls. this reallocated memory for array of keys */
+        info_ptr->keys = realloc(info_ptr->keys, (key_idx + 1) * sizeof(unsigned int *));
+
+        // allocate memory for the current key (element)
+        info_ptr->keys[key_idx] = malloc(sizeof(unsigned int));
+        // copy key value
+        *info_ptr->keys[key_idx] = id;
+        ++key_idx;
+    }
+    // populate number of keys with the index
+    info_ptr->num_keys = key_idx;
+
     mysql_free_result(result);
     return info_ptr;
 }
@@ -200,11 +205,16 @@ void free_data(TableInfo *info_ptr) {
         free(info_ptr->rng_min[i]);
         free(info_ptr->rng_max[i]);
     }   
+    // free allocated keys of outliers
+    for (unsigned int j = 0; j < info_ptr->num_keys; j++) {
+        free(info_ptr->keys[j]);
+    }
 
+    // free arrays
     free(info_ptr->columns);
     free(info_ptr->rng_min);
     free(info_ptr->rng_max);
-
+    free(info_ptr->keys);
 
     // free TableInfo struct
     free(info_ptr);

@@ -10,11 +10,11 @@
 
 /** set to 0 since we do not care about these ranges */
 #define ID_LO 0.0
-#define ID_HI 0.0
+#define ID_HI 100000000.0
 #define TIME_LO 0.0
-#define TIME_HI 0.0
+#define TIME_HI 10000000000000000000000000.0
 #define DUMP_LO 0.0
-#define DUMP_HI 0.0
+#define DUMP_HI 100000000.0
 
 /** temperature & heating temperature */
 #define TEMP_LO -50.0 /** Celsius */

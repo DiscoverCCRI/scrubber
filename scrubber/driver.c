@@ -27,6 +27,8 @@ void menu(TableInfo *info_ptr) {
                *info_ptr->rng_min[i], *info_ptr->rng_max[i]);
     }
     printf("\n---------------------------\n");
+    printf("OUTLIERS: %d\n", info_ptr->num_keys);
+    printf("\n---------------------------\n");
     printf("TOTAL ROWS : \n");
     printf("    %d\n", info_ptr->num_rows);
     printf("\n---------------------------\n");
@@ -65,10 +67,13 @@ int main() {
         data_res = outliers(db_con, data_res, data_res->columns[i], data_res->rng_min[i],
                  data_res->rng_max[i]);
     }
-    printf("OUTLIERS: %d\n", data_res->num_keys);
     for (unsigned int i = 0; i < data_res->num_keys; i++) {
-        printf("KEY : %ls", data_res->keys[i]);
+        printf("%u ", *data_res->keys[i]);
     }
+
+    //for (unsigned int i = 0; i < data_res->num_keys; i++) {
+    //    printf("KEY : %ls", data_res->keys[i]);
+    //}
 
     // outliers(db_con, data_res->columns[2], 21.03, 21.07);
 
