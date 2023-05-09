@@ -90,7 +90,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a4e02a32d77cb8aeb521208834ab8205c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve table information, column names, number of columns, number of rows.  <a href="scrub_8c.html#a4e02a32d77cb8aeb521208834ab8205c">More...</a><br /></td></tr>
 <tr class="separator:a4e02a32d77cb8aeb521208834ab8205c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adffd6f1700b62ec1755ca1b7a7392087"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTableInfo.html">TableInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087">outliers</a> (MYSQL *connection, <a class="el" href="structTableInfo.html">TableInfo</a> *info_ptr, char *column_name, double *lower, double *upper)</td></tr>
-<tr class="memdesc:adffd6f1700b62ec1755ca1b7a7392087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function for detecting outliers for weather readings.  <a href="scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087">More...</a><br /></td></tr>
+<tr class="memdesc:adffd6f1700b62ec1755ca1b7a7392087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given an upper and lower bound, determine if a given column name's rows are outside the given bounds and append an array with the keys of rows not in range.  <a href="scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087">More...</a><br /></td></tr>
 <tr class="separator:adffd6f1700b62ec1755ca1b7a7392087"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ca8c1ced1e103db5dc2f23b3593c377"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="scrub_8c.html#a2ca8c1ced1e103db5dc2f23b3593c377">scrubber</a> (MYSQL *con, <a class="el" href="structTableInfo.html">TableInfo</a> *info_ptr)</td></tr>
 <tr class="separator:a2ca8c1ced1e103db5dc2f23b3593c377"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -423,7 +423,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Function for detecting outliers for weather readings. </p>
+<p>Given an upper and lower bound, determine if a given column name's rows are outside the given bounds and append an array with the keys of rows not in range. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">connection</td><td>pointer to a MySQL connection object </td></tr>
+    <tr><td class="paramname">info_ptr</td><td>pointer to <a class="el" href="structTableInfo.html" title="Struct to hold SQL Table info.">TableInfo</a> struct that holds data about table </td></tr>
+    <tr><td class="paramname">column_name</td><td>The name of the column to query </td></tr>
+    <tr><td class="paramname">lower</td><td>pointer to a double that holds the lower bound of the range </td></tr>
+    <tr><td class="paramname">upper</td><td>pointer to a double that holds the upper bound of the range </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>pointer to a <a class="el" href="structTableInfo.html" title="Struct to hold SQL Table info.">TableInfo</a> struct that contains the newly populated info_ptr-&gt;keys array </dd></dl>
 <p>static variables to keep count of the count and id's we query</p>
 <p>instead of continuously allocating memory reallocate to save the state between function calls. this reallocated memory for array of keys</p>
 
