@@ -2,7 +2,7 @@ CC		= gcc
 FLGS	= -g -Wall -W 
 SQLFLG	= `mysql_config --cflags --libs`
 BIN		= bin
-FILES	= scrub.c driver.c
+FILES	= scrub.c util.c driver.c
 
 compile:
 	${CC} ${FLGS} ${FILES} -o ${BIN} ${SQLFLG}

@@ -1,7 +1,17 @@
 /**
  * @file scrub.h
- * This file performs cleanup on the insertions made from the weather
- * station MQTT subscribe code. Detecting outliers/anomalies in data
+ * This file contains functions that perform the following
+ *  - Establish MySQL/MariaDB connection
+ *      * Requires username, password, database address, database name, and
+ *        table name.
+ *  - Retrieve database table information
+ *      * Number of columns, columns names, number of rows,
+ *  - Populate arrays containing the lower and upper bounds for acceptable
+ * ranges for columns rows
+ *  - Given the upper/lower bounds, detect id's of data on in this range.
+ *    Populate an array containing the id's of these rows
+ *  - Given the populated row of outliers, drop these id's from the database
+ *    table and prompt for confirmation to do so
  *
  * NOTE: this program requires root privledges to your MariaDB/MySQL
  * instance
@@ -28,9 +38,9 @@ typedef struct {
     /** maximum allowed value for given column's rows, see constants.h */
     double **rng_max;
     /** array of keys from detected outliers to drop data */
-    unsigned int **keys;
+    unsigned int **keys; /** keys will always be positive */
     /** number of outliers */
-    unsigned int num_keys;
+    unsigned int num_keys; /** # of keys will always be positive */
 } TableInfo;
 
 /**
@@ -49,7 +59,7 @@ MYSQL *db_connect(char *addr, char *user, char *pass, char *db);
  * @return A pointer to a dynamically allocated TableInfo struct that contains
  * the column names, number of columns and number of rows
  */
-TableInfo *get_info(MYSQL *con);
+TableInfo *get_info(MYSQL *connection);
 
 /**
  * @brief Given an upper and lower bound, determine if a given column name's
@@ -60,11 +70,18 @@ TableInfo *get_info(MYSQL *con);
  * @param column_name The name of the column to query
  * @param lower pointer to a double that holds the lower bound of the range
  * @param upper pointer to a double that holds the upper bound of the range
- * @return pointer to a TableInfo struct that contains the newly populated 
+ * @return pointer to a TableInfo struct that contains the newly populated
  * info_ptr->keys array
  */
 TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
-              double *lower, double *upper);
+                    double *lower, double *upper);
+
+/**
+ *
+ */
+void drop(MYSQL *connection, unsigned int row_id);
+
+unsigned int **removeDuplicates(unsigned int **keys, unsigned int *num_keys);
 
 void print_table_rows(MYSQL *connection, char *column_name);
 

@@ -11,20 +11,20 @@
 
 MYSQL *db_connect(char *addr, char *user, char *pass, char *db) {
     // mysql connection object
-    MYSQL *con = mysql_init(NULL);
+    MYSQL *connection = mysql_init(NULL);
 
     // verify object is initialized
-    if (!con) {
+    if (!connection) {
         fprintf(stderr, "[!] Error Initializing Connection Object : %s\n",
-                mysql_error(con));
+                mysql_error(connection));
         exit(1);
     }
 
     // establish connection, close & exit if not successful
-    if (!mysql_real_connect(con, addr, user, pass, db, 0, NULL, 0)) {
+    if (!mysql_real_connect(connection, addr, user, pass, db, 0, NULL, 0)) {
         fprintf(stderr, "[!] Error Connecting to Database : %s\n",
-                mysql_error(con));
-        mysql_close(con);
+                mysql_error(connection));
+        mysql_close(connection);
         exit(1);
     }
 
@@ -33,10 +33,10 @@ MYSQL *db_connect(char *addr, char *user, char *pass, char *db) {
     }
 
     // return connection object
-    return con;
+    return connection;
 }
 
-TableInfo *get_info(MYSQL *con) {
+TableInfo *get_info(MYSQL *connection) {
     // MYSQL result struct
     MYSQL_RES *result;
     // MYSQL field(column) struct
@@ -44,7 +44,7 @@ TableInfo *get_info(MYSQL *con) {
     // define array of double to hold upper/lower bounds. see macro defs in
     // constants.h
     //
-    // TODO: edit these upper/lower bound arrays to be more dynamic c
+    // TODO: edit these upper/lower bound arrays to be more dynamic
     //  - constants for S900 weather station are not universal to other metrics
     //  that could be analyzed
     //  - perhaps define file of constants and create way to read the values set
@@ -62,14 +62,16 @@ TableInfo *get_info(MYSQL *con) {
                        TEMP_HI,     DUMP_HI,  PM_HI,       PM_HI};
 
     // query mqtt_data table
-    if (mysql_query(con, "SELECT * FROM mqtt_data")) {
-        fprintf(stderr, "%s\n", mysql_error(con));
+    if (mysql_query(connection, "SELECT * FROM mqtt_data")) {
+        fprintf(stderr, "[!] Error querying table : %s\n",
+                mysql_error(connection));
         exit(1);
     }
     // stores query result in struct
-    result = mysql_store_result(con);
+    result = mysql_store_result(connection);
     if (result == NULL) {
-        fprintf(stderr, "%s\n", mysql_error(con));
+        fprintf(stderr, "[!] Error storing table info into struct : %s\n",
+                mysql_error(connection));
         exit(1);
     }
     // allocate memory for TableInfo struct
@@ -92,7 +94,8 @@ TableInfo *get_info(MYSQL *con) {
         // field for current column index
         field = mysql_fetch_field_direct(result, i);
         if (field == NULL) {
-            fprintf(stderr, "%s\n", mysql_error(con));
+            fprintf(stderr, "[!] Error fetching column names : %s\n",
+                    mysql_error(connection));
             exit(1);
         }
         // allocate memory for result array elements and the lower/upper bound
@@ -128,7 +131,8 @@ TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
              column_name, column_name, *lower, *upper);
 
     if (mysql_query(connection, query) != 0) {
-        fprintf(stderr, "Error executing query: %s\n", mysql_error(connection));
+        fprintf(stderr, "[!] Error finding outliers : %s\n",
+                mysql_error(connection));
         exit(1);
     }
 
@@ -142,9 +146,11 @@ TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
         printf("%u: id=%u, %s=%f\n", ++count, id, column_name, value);
 
         // Reallocate the memory for keys array
-        /** instead of continuously allocating memory reallocate to save the state between
-         * function calls. this reallocated memory for array of keys */
-        info_ptr->keys = realloc(info_ptr->keys, (key_idx + 1) * sizeof(unsigned int *));
+        /** instead of continuously allocating memory reallocate to save the
+         * state between function calls. this reallocated memory for array of
+         * keys */
+        info_ptr->keys =
+            realloc(info_ptr->keys, (key_idx + 1) * sizeof(unsigned int *));
 
         // allocate memory for the current key (element)
         info_ptr->keys[key_idx] = malloc(sizeof(unsigned int));
@@ -157,6 +163,22 @@ TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
 
     mysql_free_result(result);
     return info_ptr;
+}
+
+void drop(MYSQL *connection, unsigned int row_id) {
+    MYSQL_RES *result;
+    unsigned int id;
+
+    char query[1024];
+    // drop the specified row
+    snprintf(query, sizeof(query), "DELETE FROM mqtt_data WHERE id='%d'",
+             row_id);
+
+    if (mysql_query(connection, query) != 0) {
+        fprintf(stderr, "\n[!] Error dropping data : %s\n",
+                mysql_error(connection));
+        exit(1);
+    }
 }
 
 void scrubber(MYSQL *con, TableInfo *info_ptr) {
@@ -204,7 +226,7 @@ void free_data(TableInfo *info_ptr) {
         free(info_ptr->columns[i]);
         free(info_ptr->rng_min[i]);
         free(info_ptr->rng_max[i]);
-    }   
+    }
     // free allocated keys of outliers
     for (unsigned int j = 0; j < info_ptr->num_keys; j++) {
         free(info_ptr->keys[j]);
