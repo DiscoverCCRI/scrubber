@@ -66,7 +66,15 @@ $(function() {
 <div class="title">Scrubber Documentation </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_docs_source_index"></a> TODO: </p>
+<div class="textblock"><p><a class="anchor" id="md_docs_source_index"></a></p>
+<h1><a class="anchor" id="autotoc_md0"></a>
+Development Notes as of 05/21/2023 :</h1>
+<h2><a class="anchor" id="autotoc_md1"></a>
+GOAL:</h2>
+<p>The goal of this scrubber util is to :</p><ol type="1">
+<li>take a SQL/MariaDB username, password, DB name, DB address, and DB table name, and establish a connection to the database</li>
+<li>get table information and populate information into the <code><a class="el" href="structTableInfo.html" title="Struct to hold SQL Table info.">TableInfo</a></code> struct that contains columns names, number of columns, number of rows, an array of lower bounds of ranges + a corresponding array of upper bounds, an array of keys of detected outliers and the number of outliers found. </li>
+</ol>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
