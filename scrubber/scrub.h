@@ -77,11 +77,14 @@ TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
                     double *lower, double *upper);
 
 /**
- *
+ * @brief Drop a row from the MySQL/MariaDB table. This function is general
+ * purpose with original intentions for dropping rows with cell(s) containing
+ * values not within the ranges defined
+ * @param connection A pointer to the MySQL connection object
+ * @param info_ptr A pointer to TableInfo struct
+ * @param row_id The ID of the row to be deleted
  */
-void drop(MYSQL *connection, unsigned int row_id);
-
-unsigned int **removeDuplicates(unsigned int **keys, unsigned int *num_keys);
+void drop(MYSQL *connection, TableInfo *info_ptr, unsigned int row_id);
 
 void print_table_rows(MYSQL *connection, char *column_name);
 

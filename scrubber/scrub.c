@@ -98,8 +98,9 @@ TableInfo *get_info(MYSQL *connection) {
                     mysql_error(connection));
             exit(1);
         }
-        // allocate memory for result array elements and the lower/upper bound
-        // array elements
+        /* allocate memory for result array elements and the lower/upper bound
+         * array elements
+         */
         info_ptr->columns[i] = (char *)malloc(strlen(field->name) + 1);
         info_ptr->rng_min[i] = (double *)malloc(sizeof(double));
         info_ptr->rng_max[i] = (double *)malloc(sizeof(double));
@@ -137,8 +138,9 @@ TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
     }
 
     result = mysql_use_result(connection);
-    /** static variables to keep count of the count and id's we query */
-    static int key_idx = 0;
+    /** static variables to keep count and id's we query, they are the
+     * same number this coudld be changed */
+    static unsigned int key_idx = 0;
     static unsigned int count = 0;
     while ((row = mysql_fetch_row(result)) != NULL) {
         id = atoi(row[0]);
@@ -165,7 +167,7 @@ TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
     return info_ptr;
 }
 
-void drop(MYSQL *connection, unsigned int row_id) {
+void drop(MYSQL *connection, TableInfo *info_ptr, unsigned int row_id) {
     MYSQL_RES *result;
     unsigned int id;
 
@@ -173,11 +175,15 @@ void drop(MYSQL *connection, unsigned int row_id) {
     // drop the specified row
     snprintf(query, sizeof(query), "DELETE FROM mqtt_data WHERE id='%d'",
              row_id);
-
-    if (mysql_query(connection, query) != 0) {
-        fprintf(stderr, "\n[!] Error dropping data : %s\n",
-                mysql_error(connection));
-        exit(1);
+    // only drop rows if outliers are detected, if number of keys > 0
+    if (info_ptr->num_keys != 0) {
+        if (mysql_query(connection, query) != 0) {
+            fprintf(stderr, "\n[!] Error dropping data : %s\n",
+                    mysql_error(connection));
+            exit(1);
+        }
+    } else {
+        printf("\n[+] No outliers to remove.\n");
     }
 }
 
