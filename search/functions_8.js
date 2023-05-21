@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['scrubber_86',['scrubber',['../scrub_8c.html#a2ca8c1ced1e103db5dc2f23b3593c377',1,'scrub.c']]],
-  ['sort_87',['sort',['../util_8c.html#afc1f185ff96022c77afbfb365d35ea5d',1,'sort(unsigned int **input, int left, int right):&#160;util.c'],['../util_8h.html#afc1f185ff96022c77afbfb365d35ea5d',1,'sort(unsigned int **input, int left, int right):&#160;util.c']]]
+  ['usage_69',['usage',['../driver_8c.html#a2ef30c42cbc289d899a8be5d2d8f77d0',1,'driver.c']]]
 ];

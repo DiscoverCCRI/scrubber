@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['outliers_83',['outliers',['../scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087',1,'outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name, double *lower, double *upper):&#160;scrub.c'],['../scrub_8h.html#adffd6f1700b62ec1755ca1b7a7392087',1,'outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name, double *lower, double *upper):&#160;scrub.c']]]
+  ['print_5ftable_5frows_66',['print_table_rows',['../scrub_8c.html#a04e88b2a3f22ef5cf96740a8da780995',1,'print_table_rows(MYSQL *connection, char *column_name):&#160;scrub.c'],['../scrub_8h.html#a04e88b2a3f22ef5cf96740a8da780995',1,'print_table_rows(MYSQL *connection, char *column_name):&#160;scrub.c']]]
 ];

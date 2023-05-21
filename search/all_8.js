@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['keys_19',['keys',['../structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e',1,'TableInfo']]]
+  ['light_5fhi_16',['LIGHT_HI',['../constants_8h.html#ad24af0a1fa0241d81b7c2186336fdd0b',1,'constants.h']]],
+  ['light_5flo_17',['LIGHT_LO',['../constants_8h.html#ac3dfabfa3b2a480912798234c627a822',1,'constants.h']]]
 ];

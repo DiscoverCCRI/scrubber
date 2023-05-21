@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rm_5fdupes_85',['rm_dupes',['../util_8c.html#a4645e06425d856797c80aed4b9af12ae',1,'rm_dupes(unsigned int **keys, unsigned int *num_keys):&#160;util.c'],['../util_8h.html#a4645e06425d856797c80aed4b9af12ae',1,'rm_dupes(unsigned int **keys, unsigned int *num_keys):&#160;util.c']]]
+  ['sort_68',['sort',['../util_8c.html#afc1f185ff96022c77afbfb365d35ea5d',1,'sort(unsigned int **input, int left, int right):&#160;util.c'],['../util_8h.html#afc1f185ff96022c77afbfb365d35ea5d',1,'sort(unsigned int **input, int left, int right):&#160;util.c']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['print_5ftable_5frows_84',['print_table_rows',['../scrub_8c.html#a04e88b2a3f22ef5cf96740a8da780995',1,'print_table_rows(MYSQL *connection, char *column_name):&#160;scrub.c'],['../scrub_8h.html#a04e88b2a3f22ef5cf96740a8da780995',1,'print_table_rows(MYSQL *connection, char *column_name):&#160;scrub.c']]]
+  ['rm_5fdupes_67',['rm_dupes',['../util_8c.html#a4645e06425d856797c80aed4b9af12ae',1,'rm_dupes(unsigned int **keys, unsigned int *num_keys):&#160;util.c'],['../util_8h.html#a4645e06425d856797c80aed4b9af12ae',1,'rm_dupes(unsigned int **keys, unsigned int *num_keys):&#160;util.c']]]
 ];

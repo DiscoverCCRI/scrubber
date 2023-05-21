@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['light_5fhi_20',['LIGHT_HI',['../constants_8h.html#ad24af0a1fa0241d81b7c2186336fdd0b',1,'constants.h']]],
-  ['light_5flo_21',['LIGHT_LO',['../constants_8h.html#ac3dfabfa3b2a480912798234c627a822',1,'constants.h']]]
+  ['main_18',['main',['../driver_8c.html#a0ddf1224851353fc92bfbff6f499fa97',1,'driver.c']]],
+  ['menu_19',['menu',['../driver_8c.html#a665c2364e097c49bf63eea7a0f69d395',1,'driver.c']]]
 ];

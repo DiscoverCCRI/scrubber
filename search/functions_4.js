@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['main_81',['main',['../driver_8c.html#a0ddf1224851353fc92bfbff6f499fa97',1,'driver.c']]],
-  ['menu_82',['menu',['../driver_8c.html#a3f58673f47b6b6b46ec1c0453b18ca38',1,'driver.c']]]
+  ['outliers_65',['outliers',['../scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087',1,'outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name, double *lower, double *upper):&#160;scrub.c'],['../scrub_8h.html#adffd6f1700b62ec1755ca1b7a7392087',1,'outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name, double *lower, double *upper):&#160;scrub.c']]]
 ];

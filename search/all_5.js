@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['get_5finfo_13',['get_info',['../scrub_8c.html#a4bb3f94238f1921f0ba2a5ad72a938ed',1,'get_info(MYSQL *connection):&#160;scrub.c'],['../scrub_8h.html#a4bb3f94238f1921f0ba2a5ad72a938ed',1,'get_info(MYSQL *connection):&#160;scrub.c']]]
+  ['hum_5fhi_10',['HUM_HI',['../constants_8h.html#ae6e89f6b58024e115a97859a6a62fa06',1,'constants.h']]],
+  ['hum_5flo_11',['HUM_LO',['../constants_8h.html#a2dcef1fa126f32b512f6ac55eb4fb7a8',1,'constants.h']]]
 ];
