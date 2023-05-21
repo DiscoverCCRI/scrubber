@@ -12,7 +12,8 @@ compile:
 
 # check binary for memory leaks
 mem_check:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --tool=memcheck ./${BIN}
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --tool=memcheck ./${BIN} -O -d
+
 # format source files using clang-format
 format:
 	find . -regex '.*\.\(c\|cu\|cuh\|cpp\|hpp\|h\|cxx\)' -exec clang-format-9 -style=file -i {} \;

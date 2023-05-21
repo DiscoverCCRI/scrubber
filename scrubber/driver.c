@@ -20,16 +20,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
-void menu(TableInfo *info_ptr) {
+void menu(TableInfo *info_ptr, char *arg) {
     printf("\n---------------------------\n");
-    printf("SenseCAP900 NODE READINGS & BOUNDS : %d\n", info_ptr->num_cols);
+    printf("SenseCAP900 NODE READINGS & BOUNDS (defined in constants.h) : %d\n", 
+            info_ptr->num_cols);
+    // print lower/upper bounds of ranges found in constants.h
     for (unsigned i = 0; i < info_ptr->num_cols; i++) {
         printf("%s MIN : %f MAX : %f \n", info_ptr->columns[i],
                *info_ptr->rng_min[i], *info_ptr->rng_max[i]);
     }
+    // if -O is passed in
     printf("\n---------------------------\n");
-    printf("OUTLIERS: %d\n", info_ptr->num_keys);
+    if (strcmp(arg, "-O") == 0) {
+        printf("OUTLIERS: %d\n", info_ptr->num_keys);
+    }
     printf("\n---------------------------\n");
     printf("TOTAL ROWS : \n");
     printf("    %d\n", info_ptr->num_rows);
@@ -37,7 +43,8 @@ void menu(TableInfo *info_ptr) {
 }
 
 void usage() {
-    printf("    -o  find outliers based on constants.h\n");
+    printf("    -O  find outliers based on constants.h\n");
+    printf("    -d  drop rows containing outliers\n");
     printf("    -m  print menu of database information\n");
     printf("    -h  headless mode, bypass entering options\n");
 }
@@ -66,120 +73,87 @@ int main(int argc, char *argv[]) {
     // get table information
     TableInfo *data_res = get_info(db_con);
 
-    // find outliers in the table
-    for (unsigned int i = 0; i < data_res->num_cols; i++) {
-        data_res = outliers(db_con, data_res, data_res->columns[i],
-                            data_res->rng_min[i], data_res->rng_max[i]);
-    }
-    if (data_res->keys != 0) {
-        // for (unsigned int i = 0; i < data_res->num_keys; i++) {
-        //    printf("%u ", *data_res->keys[i]);
-        //}
-        // sort keys
-        sort(data_res->keys, 0, data_res->num_keys - 1);
-        // remove duplicate keys
-        data_res->keys = rm_dupes(data_res->keys, &(data_res->num_keys));
-    } else {
-        printf("\n[+] No outliers found.\n");
-    }
+    // flag to keep track of the outlier flag
+    _Bool ol_flg = false;
+    // store flag y/n in this variable
+    char y_n[10];
 
-    // parse all arguments passed in
+    // parse all arguments/flags passed in
     for (int i = 0; i < argc; i++) {
-        // if option = m (menu)
+        // if option = -m (menu)
         if (strcmp(argv[i], "-m") == 0) {
-            menu(data_res);
+            menu(data_res, argv[i]);
         }
 
-        // if option = d (drop)
+        // if option = -O (outliers)
+        if (strcmp(argv[i], "-O") == 0) {
+            // set outlier flag to true
+            ol_flg = true;
+            /** find outliers in db table, pass in db connection object,
+             * populated data_res TableInfo struct ptr, columns, upper/lower
+             * bounds of ranges */
+            for (unsigned int i = 0; i < data_res->num_cols; i++) {
+                data_res = outliers(db_con, data_res, data_res->columns[i],
+                                    data_res->rng_min[i], data_res->rng_max[i]);
+            }
+
+            if (data_res->keys != 0) {
+                // for (unsigned int i = 0; i < data_res->num_keys; i++) {
+                //    printf("%u ", *data_res->keys[i]);
+                //}
+                // sort keys
+                sort(data_res->keys, 0, data_res->num_keys - 1);
+                printf("\nSORTED KEYS: \n");
+                for (unsigned int i = 0; i < data_res->num_keys; i++) {
+                    printf("%u ", **(data_res->keys + i));
+                }
+                printf("\nREMOVED DUPLICATES: \n");
+                for (unsigned int i = 0; i < data_res->num_keys; i++) {
+                    printf("%u ", **(data_res->keys + i));
+                }
+
+                // remove duplicate keys
+                data_res->keys =
+                    rm_dupes(data_res->keys, &(data_res->num_keys));
+            } 
+            else {
+                printf("\n[+] No outliers found.\n");
+            }
+        }
+        /** if option = -d (drop), requires -O to detect outliers with
+         * rows to drop */
         if (strcmp(argv[i], "-d") == 0) {
-            // drop rows containing outliers
-            for (unsigned int i = 0; i < data_res->num_keys; i++) {
-                // TODO: eliminate passing MYSQL db_con object around ?
-                drop(db_con, data_res, *data_res->keys[i]);
+            // check if outlier flag was first used to find items to drop
+            if (ol_flg == true) {
+                printf("\n[y/n] confirm dropping %d rows...\n", 
+                        data_res->num_keys);                   
+                // scan for y or no
+                scanf("%s", y_n);
+    
+                // if option y is passed in, drop rows
+                if (strcmp(y_n, "y") == 0) {
+                    // drop rows containing outliers
+                    for (unsigned int i = 0; i < data_res->num_keys; i++) {
+                        // TODO: eliminate passing MYSQL db_con object around ?
+                        drop(db_con, data_res, *data_res->keys[i]);
+                    }
+                }
+                else {
+                    printf("\n[!] not dropping any rows...\n");
+                }
+            }
+            else {
+                printf("\n[!] -d flag provided without -O.\n");
             }
         }
 
-        // if option = po (print outliers)
-        if (strcmp(argv[i], "-po") == 0) {
-        }
-
-        // if option = D (Debug)
-        if (strcmp(argv[i], "-D") == 0) {
-            print_table_rows(db_con, data_res->columns[2]);
-            printf("\nSORTED KEYS: \n");
-            for (unsigned int i = 0; i < data_res->num_keys; i++) {
-                printf("%u ", **(data_res->keys + i));
-            }
-            printf("\nSORTED KEYS + REMOVED DUPLICATES: \n");
-            for (unsigned int i = 0; i < data_res->num_keys; i++) {
-                printf("%u ", **(data_res->keys + i));
-            }
-        }
     }
 
-    // free memory allocated for column array
+    // free memory allocated for TableInfo struct
     free_data(data_res);
 
     // close connection
     mysql_close(db_con);
 
-    return 0;
-}
-
-int foo() {
-    // TODO: put this data into its own struct?
-    char addr[] = "localhost";
-    char user[] = "aba275";
-    char pass[] = "";
-    char db[] = "TEST_DB2";
-    // TODO: integrate db table name as a dynamic variable,
-    // char table[] = "mqtt_data";
-
-    // establish connection
-    MYSQL *db_con = db_connect(addr, user, pass, db);
-    // get table information
-    TableInfo *data_res = get_info(db_con);
-
-    // print_table_rows(db_con, data_res->columns[2]);
-
-    // find outliers in the table
-    for (unsigned int i = 0; i < data_res->num_cols; i++) {
-        data_res = outliers(db_con, data_res, data_res->columns[i],
-                            data_res->rng_min[i], data_res->rng_max[i]);
-    }
-    if (data_res->keys != 0) {
-        for (unsigned int i = 0; i < data_res->num_keys; i++) {
-            printf("%u ", *data_res->keys[i]);
-        }
-        // sort keys
-        sort(data_res->keys, 0, data_res->num_keys - 1);
-
-        printf("\nSORTED KEYS: \n");
-        for (unsigned int i = 0; i < data_res->num_keys; i++) {
-            printf("%u ", **(data_res->keys + i));
-        }
-        // remove
-        data_res->keys = rm_dupes(data_res->keys, &(data_res->num_keys));
-        printf("\nSORTED KEYS + REMOVED DUPLICATES: \n");
-        for (unsigned int i = 0; i < data_res->num_keys; i++) {
-            printf("%u ", **(data_res->keys + i));
-        }
-        // drop rows containing outliers
-        for (unsigned int i = 0; i < data_res->num_keys; i++) {
-            // TODO: eliminate passing MYSQL db_con object around ?
-            drop(db_con, data_res, *data_res->keys[i]);
-        }
-    } else {
-        printf("\n[+] No outliers found.\n");
-    }
-
-    // display results
-    menu(data_res);
-
-    // free memory allocated for column array
-    free_data(data_res);
-
-    // close connection
-    mysql_close(db_con);
     return 0;
 }

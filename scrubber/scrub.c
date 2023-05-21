@@ -162,6 +162,9 @@ TableInfo *outliers(MYSQL *connection, TableInfo *info_ptr, char *column_name,
     }
     // populate number of keys with the index
     info_ptr->num_keys = key_idx;
+    // this is for memory freeing purposes, original number including duplicates
+    // is needed to free all memory
+    info_ptr->orig_num_keys = key_idx;
 
     mysql_free_result(result);
     return info_ptr;
@@ -185,15 +188,6 @@ void drop(MYSQL *connection, TableInfo *info_ptr, unsigned int row_id) {
     } else {
         printf("\n[+] No outliers to remove.\n");
     }
-}
-
-void scrubber(MYSQL *con, TableInfo *info_ptr) {
-    printf("HELLOO\n");
-
-    // traverse columns, for each column name, check if rows are in range
-    // outliers(con, info_ptr, column_name);
-
-    // average(con, info_ptr, column_name);
 }
 
 void print_table_rows(MYSQL *connection, char *column_name) {
@@ -226,7 +220,7 @@ void print_table_rows(MYSQL *connection, char *column_name) {
 }
 
 void free_data(TableInfo *info_ptr) {
-    printf("Freeing memory...\n");
+    printf("\n[+] Freeing memory...\n");
     // free column names and ranges
     for (unsigned int i = 0; i < info_ptr->num_cols; i++) {
         free(info_ptr->columns[i]);
@@ -234,7 +228,7 @@ void free_data(TableInfo *info_ptr) {
         free(info_ptr->rng_max[i]);
     }
     // free allocated keys of outliers
-    for (unsigned int j = 0; j < info_ptr->num_keys; j++) {
+    for (unsigned int j = 0; j < info_ptr->orig_num_keys; j++) {
         free(info_ptr->keys[j]);
     }
 

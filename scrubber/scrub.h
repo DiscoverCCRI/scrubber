@@ -39,8 +39,11 @@ typedef struct {
     double **rng_max;
     /** array of keys from detected outliers to drop data */
     unsigned int **keys; /** keys will always be positive */
+    /** original number of keys (before removed dupes) */
+    unsigned int orig_num_keys;
     /** number of outliers */
     unsigned int num_keys; /** # of keys will always be positive */
+
 } TableInfo;
 
 /**
