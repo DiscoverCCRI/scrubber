@@ -3,15 +3,15 @@
  */
 #include "scrub.h"
 #include "util.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 void menu(TableInfo *info_ptr, char *arg) {
     printf("\n---------------------------\n");
-    printf("SenseCAP900 NODE READINGS & BOUNDS (defined in constants.h) : %d\n", 
-            info_ptr->num_cols);
+    printf("SenseCAP900 NODE READINGS & BOUNDS (defined in constants.h) : %d\n",
+           info_ptr->num_cols);
     // print lower/upper bounds of ranges found in constants.h
     for (unsigned i = 0; i < info_ptr->num_cols; i++) {
         printf("%s MIN : %f MAX : %f \n", info_ptr->columns[i],
@@ -98,8 +98,7 @@ int main(int argc, char *argv[]) {
                 // remove duplicate keys
                 data_res->keys =
                     rm_dupes(data_res->keys, &(data_res->num_keys));
-            } 
-            else {
+            } else {
                 printf("\n[+] No outliers found.\n");
             }
         }
@@ -108,11 +107,11 @@ int main(int argc, char *argv[]) {
         if (strcmp(argv[i], "-d") == 0) {
             // check if outlier flag was first used to find items to drop
             if (ol_flg == true) {
-                printf("\n[y/n] confirm dropping %d rows...\n", 
-                        data_res->num_keys);                   
+                printf("\n[y/n] confirm dropping %d rows...\n",
+                       data_res->num_keys);
                 // scan for y or no
                 scanf("%s", y_n);
-    
+
                 // if option y is passed in, drop rows
                 if (strcmp(y_n, "y") == 0) {
                     // drop rows containing outliers
@@ -120,16 +119,13 @@ int main(int argc, char *argv[]) {
                         // TODO: eliminate passing MYSQL db_con object around ?
                         drop(db_con, data_res, *data_res->keys[i]);
                     }
-                }
-                else {
+                } else {
                     printf("\n[!] not dropping any rows...\n");
                 }
-            }
-            else {
+            } else {
                 printf("\n[!] -d flag provided without -O.\n");
             }
         }
-
     }
 
     // free memory allocated for TableInfo struct
