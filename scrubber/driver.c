@@ -31,11 +31,8 @@ void menu(TableInfo *info_ptr, char *arg) {
         printf("%s MIN : %f MAX : %f \n", info_ptr->columns[i],
                *info_ptr->rng_min[i], *info_ptr->rng_max[i]);
     }
-    // if -O is passed in
     printf("\n---------------------------\n");
-    if (strcmp(arg, "-O") == 0) {
-        printf("OUTLIERS: %d\n", info_ptr->num_keys);
-    }
+    printf("OUTLIERS: %d\n", info_ptr->num_keys);
     printf("\n---------------------------\n");
     printf("TOTAL ROWS : \n");
     printf("    %d\n", info_ptr->num_rows);
@@ -46,7 +43,7 @@ void usage() {
     printf("    -O  find outliers based on constants.h\n");
     printf("    -d  drop rows containing outliers\n");
     printf("    -m  print menu of database information\n");
-    printf("    -h  headless mode, bypass entering options\n");
+    printf("    -H  headless mode, bypass entering options\n");
 }
 
 /**
@@ -86,7 +83,7 @@ int main(int argc, char *argv[]) {
         }
 
         // if option = -O (outliers)
-        if (strcmp(argv[i], "-O") == 0) {
+        if (strcmp(argv[i], "-O") == 0 || strcmp(argv[i], "-H") == 0) {
             // set outlier flag to true
             ol_flg = true;
             /** find outliers in db table, pass in db connection object,

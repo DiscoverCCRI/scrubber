@@ -228,7 +228,7 @@ void free_data(TableInfo *info_ptr) {
         free(info_ptr->rng_max[i]);
     }
     // free allocated keys of outliers
-    for (unsigned int j = 0; j < info_ptr->orig_num_keys; j++) {
+    for (unsigned int j = 0; j < info_ptr->num_keys; j++) {
         free(info_ptr->keys[j]);
     }
 
@@ -240,6 +240,4 @@ void free_data(TableInfo *info_ptr) {
 
     // free TableInfo struct
     free(info_ptr);
-
-    printf("[+] Memory freed\n");
 }
