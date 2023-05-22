@@ -1,6 +1,5 @@
 /**
  * @file util.c
- * This file contains
  */
 #include <stdlib.h>
 

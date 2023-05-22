@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include "threadpool.hpp"
 
 MYSQL *db_connect(char *addr, char *user, char *pass, char *db) {
     // mysql connection object

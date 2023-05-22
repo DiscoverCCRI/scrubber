@@ -29,8 +29,7 @@ Note, that these option rely on order they are passed in. `-d` that drops rows f
 by way of the `-O` flag which finds outliers to find in the first place. `-H` is meant to bypass all flags as well as 
 the confirmation message the appears when dropping rows, this flag allows the utility to be run in the background without
 user intervention. `-m` display a menu of information related to the database table, the constants defined in `constants.h`
-that contains the lower/upper bounds for the 20 readings involved. There is also some unit testing featured using CMocka
-which are simple enought of to follow and create more. See that documentation [here](https://api.cmocka.org/)
+that contains the lower/upper bounds for the 20 readings involved. 
 
 ## Unable to get done
 The code overall is a bit modular but the tool itself is not as general purpose as I desired.
