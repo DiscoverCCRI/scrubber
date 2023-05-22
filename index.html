@@ -66,16 +66,49 @@ $(function() {
 <div class="title">Scrubber Documentation </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_docs_source_index"></a></p>
+<div class="textblock"><p><a class="anchor" id="md_docs_source_index"></a> The extensive source code documentation can be seen here <a href="https://discoverccri.github.io/scrubber/globals_func.html">https://discoverccri.github.io/scrubber/globals_func.html</a>.</p>
 <h1><a class="anchor" id="autotoc_md0"></a>
 Development Notes as of 05/21/2023 :</h1>
 <h2><a class="anchor" id="autotoc_md1"></a>
-GOAL:</h2>
+Overview:</h2>
 <p>The goal of this scrubber util is to :</p><ol type="1">
-<li>take a SQL/MariaDB username, password, DB name, DB address, and DB table name, and establish a connection to the database</li>
-<li>get table information and populate information into the <code><a class="el" href="structTableInfo.html" title="Struct to hold SQL Table info.">TableInfo</a></code> struct that contains columns names, number of columns, number of rows, an array of lower bounds of ranges + a corresponding array of upper bounds, an array of keys of detected outliers and the number of outliers found. </li>
+<li>take a SQL/MariaDB username, password, DB name, DB address, and DB <br  />
+ table name, and establish a connection to the database</li>
+<li>get table information and populate information into the <code><a class="el" href="structTableInfo.html" title="Struct to hold SQL Table info.">TableInfo</a></code> struct that contains columns names, number of columns, number of rows, an array of lower bounds of ranges + a corresponding array of upper bounds, an array of keys of detected outliers and the number of outliers found.</li>
+<li>given a column name check if the rows of that column are within a define range, in this case they are defined in <a href="https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/constants.h"><code>constants.h</code></a>.</li>
+<li>drop rows that contain values not within the specified ranges</li>
 </ol>
-</div></div><!-- PageDoc -->
+<h2><a class="anchor" id="autotoc_md2"></a>
+What I was able to get done</h2>
+<p>This scrubber utility can be compiled into a binary using the <a href="https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/Makefile"><code>Makefile</code></a> in the <a href="https://github.com/DiscoverCCRI/scrubber/tree/main/scrubber">scrubber</a> directory. Type <code>$ make</code> at the cmd line to compile the files. From there, there are several command line flags created</p>
+<div class="fragment"><div class="line">-O  find outliers based on constants.h</div>
+<div class="line">-d  drop rows containing outliers</div>
+<div class="line">-m  print menu of database information</div>
+<div class="line">-h  headless mode, bypass entering options</div>
+</div><!-- fragment --><p> Note, that these option rely on order they are passed in. <code>-d</code> that drops rows from the SQL database table is populated by way of the <code>-O</code> flag which finds outliers to find in the first place. <code>-H</code> is meant to bypass all flags as well as the confirmation message the appears when dropping rows, this flag allows the utility to be run in the background without user intervention. <code>-m</code> display a menu of information related to the database table, the constants defined in <code><a class="el" href="constants_8h.html">constants.h</a></code> that contains the lower/upper bounds for the 20 readings involved. There is also some unit testing featured using CMocka which are simple enought of to follow and create more. See that documentation <a href="https://api.cmocka.org/">here</a></p>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Unable to get done</h2>
+<p>The code overall is a bit modular but the tool itself is not as general purpose as I desired.</p><ol type="1">
+<li>starting form the beginning of the <code><a class="el" href="driver_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title="main()">main()</a></code> function in <a href="https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/driver.c"><code>driver.c</code></a>, credentials for the database could be stored in a struct and possibly be asked as a prompt from the user</li>
+<li>The command line arguments cannot be called in any order and overall are not well designed. Using some seperate function for command line parsing may be ideal and storing that data in its own struct</li>
+<li>For the outliers function in <a href="https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/scrub.c"><code>scrub.c</code></a>, these arrays that are created are not as modular as I had planned for. They require constants to be defined in <a href="https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/constants.h"><code>constants.h</code></a>. A more dynamic way to find this as well as define these ranges would be very ideal. <div class="fragment"><div class="line">double low_val[] = {ID_LO,       TIME_LO,  TEMP_LO,     HUM_LO,</div>
+<div class="line">                    PRESS_LO,    LIGHT_LO, WIND_DIR_LO, WIND_DIR_LO,</div>
+<div class="line">                    WIND_DIR_LO, WIND_LO,  WIND_LO,     WIND_LO,</div>
+<div class="line">                    RAIN_LO,     RAIN_LO,  RAIN_LO,     RAIN_LO,</div>
+<div class="line">                    TEMP_LO,     DUMP_LO,  PM_LO,       PM_LO};</div>
+<div class="line"> </div>
+<div class="line">double up_val[] = {ID_HI,       TIME_HI,  TEMP_HI,     HUM_HI,</div>
+<div class="line">                   PRESS_HI,    LIGHT_HI, WIND_DIR_HI, WIND_DIR_HI,</div>
+<div class="line">                   WIND_DIR_HI, WIND_HI,  WIND_HI,     WIND_HI,</div>
+<div class="line">                   RAIN_HI,     RAIN_HI,  RAIN_HI,     RAIN_HI,</div>
+<div class="line">                   TEMP_HI,     DUMP_HI,  PM_HI,       PM_HI};</div>
+</div><!-- fragment --></li>
+</ol>
+<h2><a class="anchor" id="autotoc_md4"></a>
+Known Bugs</h2>
+<p>This program makes use of dynamic memory allocation with <code>malloc()</code>, <code>realloc()</code>, and <code>free()</code>, in specific the issue pertains the the <code><a class="el" href="scrub_8c.html#adffd6f1700b62ec1755ca1b7a7392087" title="Given an upper and lower bound, determine if a given column name&#39;s rows are outside the given bounds ...">outliers()</a></code> function on this line </p><div class="fragment"><div class="line">// allocate memory for the current key (element)</div>
+<div class="line">info_ptr-&gt;keys[key_idx] = malloc(sizeof(unsigned int));</div>
+</div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
