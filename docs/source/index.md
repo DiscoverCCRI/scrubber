@@ -53,6 +53,7 @@ define these ranges would be very ideal.
                        RAIN_HI,     RAIN_HI,  RAIN_HI,     RAIN_HI,
                        TEMP_HI,     DUMP_HI,  PM_HI,       PM_HI};
 ```
+4. Unit tests. I was unable to write any unit tests for this code but had attempted some using CMocka. In previous work for C unit tests I would often use C++ unit test frameworks.
 
 ## Known Bugs
 This program makes use of dynamic memory allocation with `malloc()`, `realloc()`, and `free()`, in specific the issue
