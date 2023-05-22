@@ -329,7 +329,7 @@ Functions</h2></td></tr>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        free(info_ptr-&gt;<a class="code" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">rng_max</a>[i]);</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    }</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="comment">// free allocated keys of outliers</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; info_ptr-&gt;<a class="code" href="structTableInfo.html#ae2c7a70d321d009954ca5db7160a155b">orig_num_keys</a>; j++) {</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; info_ptr-&gt;<a class="code" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">num_keys</a>; j++) {</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        free(info_ptr-&gt;<a class="code" href="structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e">keys</a>[j]);</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    }</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160; </div>
@@ -341,17 +341,14 @@ Functions</h2></td></tr>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="comment">// free TableInfo struct</span></div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    free(info_ptr);</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    printf(<span class="stringliteral">&quot;[+] Memory freed\n&quot;</span>);</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;}</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;}</div>
 <div class="ttc" id="astructTableInfo_html_a154cef37fecb2b583e9a2a2162d5cadf"><div class="ttname"><a href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">TableInfo::rng_max</a></div><div class="ttdeci">double ** rng_max</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00039">scrub.h:39</a></div></div>
 <div class="ttc" id="astructTableInfo_html_a8aad4de662882540a93323cf5f4ed14e"><div class="ttname"><a href="structTableInfo.html#a8aad4de662882540a93323cf5f4ed14e">TableInfo::num_cols</a></div><div class="ttdeci">unsigned int num_cols</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00033">scrub.h:33</a></div></div>
 <div class="ttc" id="astructTableInfo_html_ab088c3acbdc0a1f767490f6ec781672e"><div class="ttname"><a href="structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e">TableInfo::keys</a></div><div class="ttdeci">unsigned int ** keys</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00041">scrub.h:41</a></div></div>
-<div class="ttc" id="astructTableInfo_html_ae2c7a70d321d009954ca5db7160a155b"><div class="ttname"><a href="structTableInfo.html#ae2c7a70d321d009954ca5db7160a155b">TableInfo::orig_num_keys</a></div><div class="ttdeci">unsigned int orig_num_keys</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00043">scrub.h:43</a></div></div>
 <div class="ttc" id="astructTableInfo_html_af364d365d580a5dbb7b8b5c6d4889e36"><div class="ttname"><a href="structTableInfo.html#af364d365d580a5dbb7b8b5c6d4889e36">TableInfo::columns</a></div><div class="ttdeci">char ** columns</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00031">scrub.h:31</a></div></div>
 <div class="ttc" id="astructTableInfo_html_af6591c200205d2be5931d96fb599b393"><div class="ttname"><a href="structTableInfo.html#af6591c200205d2be5931d96fb599b393">TableInfo::rng_min</a></div><div class="ttdeci">double ** rng_min</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00037">scrub.h:37</a></div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="structTableInfo.html#af364d365d580a5dbb7b8b5c6d4889e36">TableInfo::columns</a>, <a class="el" href="structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e">TableInfo::keys</a>, <a class="el" href="structTableInfo.html#a8aad4de662882540a93323cf5f4ed14e">TableInfo::num_cols</a>, <a class="el" href="structTableInfo.html#ae2c7a70d321d009954ca5db7160a155b">TableInfo::orig_num_keys</a>, <a class="el" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">TableInfo::rng_max</a>, and <a class="el" href="structTableInfo.html#af6591c200205d2be5931d96fb599b393">TableInfo::rng_min</a>.</p>
+<p class="reference">References <a class="el" href="structTableInfo.html#af364d365d580a5dbb7b8b5c6d4889e36">TableInfo::columns</a>, <a class="el" href="structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e">TableInfo::keys</a>, <a class="el" href="structTableInfo.html#a8aad4de662882540a93323cf5f4ed14e">TableInfo::num_cols</a>, <a class="el" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">TableInfo::num_keys</a>, <a class="el" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">TableInfo::rng_max</a>, and <a class="el" href="structTableInfo.html#af6591c200205d2be5931d96fb599b393">TableInfo::rng_min</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="driver_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main()</a>.</p>
 
@@ -600,6 +597,7 @@ Functions</h2></td></tr>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    mysql_free_result(result);</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    <span class="keywordflow">return</span> info_ptr;</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}</div>
+<div class="ttc" id="astructTableInfo_html_ae2c7a70d321d009954ca5db7160a155b"><div class="ttname"><a href="structTableInfo.html#ae2c7a70d321d009954ca5db7160a155b">TableInfo::orig_num_keys</a></div><div class="ttdeci">unsigned int orig_num_keys</div><div class="ttdef"><b>Definition:</b> <a href="scrub_8h_source.html#l00043">scrub.h:43</a></div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e">TableInfo::keys</a>, <a class="el" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">TableInfo::num_keys</a>, and <a class="el" href="structTableInfo.html#ae2c7a70d321d009954ca5db7160a155b">TableInfo::orig_num_keys</a>.</p>
 

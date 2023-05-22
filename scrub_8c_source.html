@@ -293,7 +293,7 @@ $(function() {
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        free(info_ptr-&gt;<a class="code" href="structTableInfo.html#a154cef37fecb2b583e9a2a2162d5cadf">rng_max</a>[i]);</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    }</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="comment">// free allocated keys of outliers</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; info_ptr-&gt;<a class="code" href="structTableInfo.html#ae2c7a70d321d009954ca5db7160a155b">orig_num_keys</a>; j++) {</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; info_ptr-&gt;<a class="code" href="structTableInfo.html#a2bf67cd2d3b7e4382b17e6aed413d8f8">num_keys</a>; j++) {</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        free(info_ptr-&gt;<a class="code" href="structTableInfo.html#ab088c3acbdc0a1f767490f6ec781672e">keys</a>[j]);</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    }</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160; </div>
@@ -305,9 +305,7 @@ $(function() {
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="comment">// free TableInfo struct</span></div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    free(info_ptr);</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    printf(<span class="stringliteral">&quot;[+] Memory freed\n&quot;</span>);</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;}</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;}</div>
 <div class="ttc" id="aconstants_8h_html"><div class="ttname"><a href="constants_8h.html">constants.h</a></div></div>
 <div class="ttc" id="aconstants_8h_html_a11ccf0a5663316025ef86c8a79ca23d9"><div class="ttname"><a href="constants_8h.html#a11ccf0a5663316025ef86c8a79ca23d9">DUMP_LO</a></div><div class="ttdeci">#define DUMP_LO</div><div class="ttdef"><b>Definition:</b> <a href="constants_8h_source.html#l00016">constants.h:16</a></div></div>
 <div class="ttc" id="aconstants_8h_html_a1f4604f0fe8c31460f29a9b686d5a5e9"><div class="ttname"><a href="constants_8h.html#a1f4604f0fe8c31460f29a9b686d5a5e9">WIND_DIR_LO</a></div><div class="ttdeci">#define WIND_DIR_LO</div><div class="ttdef"><b>Definition:</b> <a href="constants_8h_source.html#l00040">constants.h:40</a></div></div>
