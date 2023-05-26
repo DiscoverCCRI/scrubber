@@ -23,7 +23,7 @@ to compile the files. From there, there are several command line flags created
     -O  find outliers based on constants.h
     -d  drop rows containing outliers
     -m  print menu of database information
-    -h  headless mode, bypass entering options
+    -H  headless mode, bypass entering options
 ```
 Note, that these option rely on order they are passed in. `-d` that drops rows from the SQL database table is populated
 by way of the `-O` flag which finds outliers to find in the first place. `-H` is meant to bypass all flags as well as 
@@ -35,9 +35,10 @@ that contains the lower/upper bounds for the 20 readings involved.
 The code overall is a bit modular but the tool itself is not as general purpose as I desired.
 1. starting form the beginning of the `main()` function in [`driver.c`](https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/driver.c), credentials for the database could be stored
 in a struct and possibly be asked as a prompt from the user
-2. The command line arguments cannot be called in any order and overall are not well designed. Using some seperate
+2. `-H` flag for "headless" mode. This should bypass any flags/confirmations that need to be passed in. I had planned to just add an `||` or to the conditionals checking for the flags themselves for examples `if (strcmp(argv[i], "-d") == 0) || if (strcmp(argv[i], "-H") == 0)`. This may be a less than optimal solution.
+4. The command line arguments cannot be called in any order and overall are not well designed. Using some seperate
 function for command line parsing may be ideal and storing that data in its own struct
-3. For the outliers function in [`scrub.c`](https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/scrub.c), these
+4. For the outliers function in [`scrub.c`](https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/scrub.c), these
 arrays that are created are not as modular as I had planned for. They require constants to be defined in [`constants.h`](https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/constants.h). A more dynamic way to find this as well as 
 define these ranges would be very ideal.
 ```
