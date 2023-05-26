@@ -84,13 +84,16 @@ What I was able to get done</h2>
 <div class="fragment"><div class="line">-O  find outliers based on constants.h</div>
 <div class="line">-d  drop rows containing outliers</div>
 <div class="line">-m  print menu of database information</div>
-<div class="line">-h  headless mode, bypass entering options</div>
+<div class="line">-H  headless mode, bypass entering options</div>
 </div><!-- fragment --><p> Note, that these option rely on order they are passed in. <code>-d</code> that drops rows from the SQL database table is populated by way of the <code>-O</code> flag which finds outliers to find in the first place. <code>-H</code> is meant to bypass all flags as well as the confirmation message the appears when dropping rows, this flag allows the utility to be run in the background without user intervention. <code>-m</code> display a menu of information related to the database table, the constants defined in <code><a class="el" href="constants_8h.html">constants.h</a></code> that contains the lower/upper bounds for the 20 readings involved.</p>
 <h2><a class="anchor" id="autotoc_md3"></a>
 Unable to get done</h2>
 <p>The code overall is a bit modular but the tool itself is not as general purpose as I desired.</p><ol type="1">
 <li>starting form the beginning of the <code><a class="el" href="driver_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title="main()">main()</a></code> function in <a href="https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/driver.c"><code>driver.c</code></a>, credentials for the database could be stored in a struct and possibly be asked as a prompt from the user</li>
+<li><code>-H</code> flag for "headless" mode. This should bypass any flags/confirmations that need to be passed in. I had planned to just add an <code>||</code> or to the conditionals checking for the flags themselves for examples <code>if (strcmp(argv[i], "-d") == 0) || if (strcmp(argv[i], "-H") == 0)</code>. This may be a less than optimal solution.</li>
 <li>The command line arguments cannot be called in any order and overall are not well designed. Using some seperate function for command line parsing may be ideal and storing that data in its own struct</li>
+</ol>
+<ol type="1">
 <li>For the outliers function in <a href="https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/scrub.c"><code>scrub.c</code></a>, these arrays that are created are not as modular as I had planned for. They require constants to be defined in <a href="https://github.com/DiscoverCCRI/scrubber/blob/main/scrubber/constants.h"><code>constants.h</code></a>. A more dynamic way to find this as well as define these ranges would be very ideal. <div class="fragment"><div class="line">double low_val[] = {ID_LO,       TIME_LO,  TEMP_LO,     HUM_LO,</div>
 <div class="line">                    PRESS_LO,    LIGHT_LO, WIND_DIR_LO, WIND_DIR_LO,</div>
 <div class="line">                    WIND_DIR_LO, WIND_LO,  WIND_LO,     WIND_LO,</div>
@@ -103,6 +106,8 @@ Unable to get done</h2>
 <div class="line">                   RAIN_HI,     RAIN_HI,  RAIN_HI,     RAIN_HI,</div>
 <div class="line">                   TEMP_HI,     DUMP_HI,  PM_HI,       PM_HI};</div>
 </div><!-- fragment --></li>
+</ol>
+<ol type="1">
 <li>Unit tests. I was unable to write any unit tests for this code but had attempted some using CMocka. In previous work for C unit tests I would often use C++ unit test frameworks.</li>
 </ol>
 <h2><a class="anchor" id="autotoc_md4"></a>
